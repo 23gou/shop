@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+           http://www.springframework.org/schema/tx 
+           http://www.springframework.org/schema/tx/spring-tx.xsd">
+	<!-- log4j配置已经移动到web.xml，这个log4j加载主要是针对单元测试的 -->
+	<bean id="log4jInitializer"
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod">
+			<value>org.springframework.util.Log4jConfigurer.initLogging</value>
+		</property>
+		<property name="arguments">
+			<list>
+				<value>classpath:cn/gou23/shop/resource/log4j/log4j.xml</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 开启注解支持 ，将会对注解进行处理 -->
+	<context:annotation-config />
+	<!-- 开启自动代理，自动代理是指Spring会判断一个bean是否使用了一个或多个切面通知，并据此自动生成相应的代理以拦截其方法调用，并且确认通知是否如期进行。 
+		如果想强制使用CGLIB代理，需要将 <aop:aspectj-autoproxy> 的 proxy-target-class 属性设为true。 
+		我们只使用jdk proxy -->
+	<aop:aspectj-autoproxy proxy-target-class="false" />
+	<!-- 扫描的包，spring将自动扫描这些包，根据其的注解配置，自动进行配置 -->
+	<context:component-scan
+		base-package="cn.gou23.shop.dao, cn.gou23.shop.service, cn.gou23.shop.parse, cn.gou23.shop.taobaoapi" />
+	<!-- 注解驱动开启，对注解方式的事物进行支持 -->
+	<tx:annotation-driven mode="proxy"
+		transaction-manager="transactionManager" />
+
+	<!-- 属性配置文件读取 -->
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:/cn/gou23/shop/resource/jdbc/jdbc.properties
+				</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 数据源配置 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="${connection.driver_class}" />
+		<property name="jdbcUrl" value="${jdbc.connection.url}" />
+		<property name="idleConnectionTestPeriod"
+			value="${jdbc.pool.c3p0.idle_connection_test_period}" />
+		<property name="preferredTestQuery" value="${jdbc.pool.c3p0.preferred_test_query}" />
+		<property name="maxIdleTime" value="${jdbc.pool.c3p0.max_idle_time}" />
+		<property name="properties">
+			<props>
+				<prop key="user">${jdbc.connection.username}</prop>
+				<prop key="password">${jdbc.connection.password}</prop>
+				<prop key="c3p0.acquire_increment">${jdbc.pool.c3p0.acquire_increment}</prop>
+				<prop key="c3p0.max_size">${jdbc.pool.c3p0.max_size}</prop>
+				<prop key="c3p0.min_size">${jdbc.pool.c3p0.min_size}</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- mybatis session factory session factory会创建调用crateObject来创建dao -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="configLocation"
+			value="classpath:cn/gou23/shop/resource/mybatis/SqlMapConfig.xml" />
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- 事物管理器 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- 会扫描basePackage属性配置的包路径 -->
+	<bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 这里不指定 sqlSessionFactory，否则会造成datasource提早加载，而造成spring占位符功能无效 -->
+		<property name="basePackage" value="cn.gou23.shop.dao" />
+	</bean>
+
+	<bean class="cn.gou23.cgodo.mybatis.aop.CountAspect" />
+
+	<bean class="com.taobao.api.DefaultTaobaoClient">
+		<constructor-arg>
+			<value>http://gw.api.taobao.com/router/rest</value>
+		</constructor-arg>
+
+		<constructor-arg>
+			<value>21416327</value>
+		</constructor-arg>
+
+		<constructor-arg>
+			<value>e239a05b97d973c886ce4a71a3339efd</value>
+		</constructor-arg>
+	</bean>
+</beans>
