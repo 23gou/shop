@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+	<!-- 指定JDBC驱动路径,从用户目录读取,来兼容不同的开发人员 -->
+	<classPathEntry location="${user.home}/mysql-connector-java-5.1.6.jar" />
+
+	<context id="cn.23gou.shop" targetRuntime="MyBatis3">
+		<property name="beginningDelimiter" value="`" />
+		<property name="endingDelimiter" value="`" />
+		<property name="jdbcType" value="false" />
+		<!-- true为加入mybatis generator的注释 ， false则不加入 -->
+		<property name="suppressTypeWarnings" value="false" />
+		<!-- 生成hashcode方法 -->
+		<plugin type="org.mybatis.generator.plugins.EqualsHashCodePlugin" />
+		<!-- model自动实现Serializable接口 -->
+		<plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+		<!-- 自动toUpperCase调用，可以完成like的不区分大小写搜索 -->
+		<plugin type="org.mybatis.generator.plugins.CaseInsensitiveLikePlugin" />
+
+		<!-- 实体条件重命名，把Example命名为EntityCondition -->
+		<plugin type="org.mybatis.generator.plugins.RenameExampleClassPlugin">
+			<property name="searchString" value="Example$" />
+			<property name="replaceString" value="Condition" />
+		</plugin>
+
+		<!-- 该插件需要在org.mybatis.generator.plugins.RowBoundsPlugin插件之前，来保证在分页前执行了修改返回值类型的插件 -->
+		<plugin type="cn.gou23.cgodo.mybatis.generator.SelectPlugin" />
+
+		<!-- <plugin type="org.mybatis.generator.plugins.SqlMapConfigPlugin"> -->
+		<!-- <property name="targetProject" value="23gou/resource-test" /> -->
+		<!-- <property name="targetPackage" value="cn.gou23.resource.mybatis" /> -->
+		<!-- <property name="fileName" value="SqlMapConfig.xml" /> -->
+		<!-- </plugin> -->
+
+		<!-- 分页插件 -->
+		<plugin type="org.mybatis.generator.plugins.RowBoundsPlugin">
+		</plugin>
+
+		<!-- 禁止在生成的代码中,生成时间,禁止在生成的代码中生成注释 -->
+		<commentGenerator
+			type="cn.gou23.cgodo.mybatis.generator.CommentFromDatabaseGenerator">
+			<property name="suppressDate" value="true" />
+			<property name="suppressAllComments" value="false" />
+		</commentGenerator>
+
+		<!-- URL,连接地址使用用户目录,来兼容不同用户 -->
+		<!-- <jdbcConnection driverClass="com.hxtt.sql.paradox.ParadoxDriver" -->
+		<!-- connectionURL="jdbc:paradox:/${user.home}/23gou" userId="" password="" 
+			/> -->
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
+			connectionURL="jdbc:mysql://221.231.6.226:3306/a0826103329?useUnicode=false&amp;autoReconnect=true&amp;characterEncoding=utf-8"
+			userId="a0826103329" password="91337934" />
+
+		<javaModelGenerator targetPackage="cn.gou23.shop.entity"
+			targetProject="../src/main/java">
+			<!-- 关闭自动添加子包（自动添加schema) -->
+			<property name="enableSubPackages" value="false" />
+			<property name="trimStrings" value="true" />
+		</javaModelGenerator>
+
+		<sqlMapGenerator targetPackage="cn.gou23.shop.resource.mybatis.sqlmap"
+			targetProject="../src/main/resources">
+			<!-- 关闭自动添加子包（自动添加schema) -->
+			<property name="enableSubPackages" value="false" />
+		</sqlMapGenerator>
+
+		<javaClientGenerator targetPackage="cn.gou23.shop.dao"
+			targetProject="../src/main/java" type="XMLMAPPER">
+			<!-- 关闭自动添加子包（自动添加schema) -->
+			<property name="enableSubPackages" value="false" />
+		</javaClientGenerator>
+		
+		<table tableName="item_source" domainObjectName="ItemSourceEntity">
+			<columnOverride column="TYPE"
+				javaType="cn.gou23.shop.constant.SourceType"></columnOverride>
+			<columnOverride column="SALE_STATUS"
+				javaType="cn.gou23.shop.constant.SaleStatus"></columnOverride>
+		</table>
+		
+		<table tableName="source_blacklist" domainObjectName="SourceBlacklistEntity">
+			<columnOverride column="TYPE"
+				javaType="cn.gou23.shop.constant.SourceType"></columnOverride>
+		</table>
+		
+		<table tableName="source_owner" domainObjectName="SourceOwnerEntity">
+			<columnOverride column="TYPE"
+				javaType="cn.gou23.shop.constant.SourceType"></columnOverride>
+		</table>
+		
+		<table tableName="shop" domainObjectName="ShopEntity">
+		</table>
+	</context>
+</generatorConfiguration>

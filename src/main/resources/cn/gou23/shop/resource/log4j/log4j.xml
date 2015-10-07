@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
+	<!-- 控制台输出 -->
+	<appender name="CONSOLE_ALL" class="org.apache.log4j.ConsoleAppender">
+		<param name="Threshold" value="DEBUG" />
+
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%n服务器运行时间：%r 线程名：[%t] %n日志位置：%l %n记录器logger名称：%c %n日志等级：%-5p %n发生时间：%d{yyyy-MM-dd HH:mm:ss} %n日志内容：%m %n----------------------------------------------------------------------%n%n%n" />
+		</layout>
+	</appender>
+
+	<!-- debug级别日志文件 -->
+	<appender name="DEBUG" class="org.apache.log4j.RollingFileAppender">
+		<param name="Threshold" value="DEBUG" />
+		<param name="File" value="$${loghome}/23gou/shop/debug.log" />
+		<param name="Append" value="true" />
+		<param name="MaxFileSize" value="50MB" />
+		<param name="MaxBackupIndex" value="100" />
+
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%n服务器运行时间：%r 线程名：[%t] %n日志位置：%l %n记录器logger名称：%c %n日志等级：%-5p %n发生时间：%d{yyyy-MM-dd HH:mm:ss} %n日志内容：%m %n----------------------------------------------------------------------%n%n%n" />
+		</layout>
+
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="DEBUG" />
+			<param name="LevelMax" value="DEBUG" />
+		</filter>
+	</appender>
+
+	<!-- info级别日志文件 -->
+	<appender name="INFO" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="Threshold" value="INFO" />
+		<param name="File" value="$${loghome}/23gou/shop/info.log" />
+		<param name="Append" value="true" />
+		<param name="DatePattern" value="yyyy-MM-dd-HH" />
+
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%n服务器运行时间：%r 线程名：[%t] %n日志位置：%l %n记录器logger名称：%c %n日志等级：%-5p %n发生时间：%d{yyyy-MM-dd HH:mm:ss} %n日志内容：%m %n----------------------------------------------------------------------%n%n%n" />
+		</layout>
+
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="INFO" />
+			<param name="LevelMax" value="INFO" />
+		</filter>
+	</appender>
+
+	<!-- warn级别日志文件 -->
+	<appender name="WARN" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="Threshold" value="WARN" />
+		<param name="File" value="$${loghome}/23gou/shop/warn.log" />
+		<param name="Append" value="true" />
+		<param name="DatePattern" value="yyyy-MM-dd-HH" />
+
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%n服务器运行时间：%r 线程名：[%t] %n日志位置：%l %n记录器logger名称：%c %n日志等级：%-5p %n发生时间：%d{yyyy-MM-dd HH:mm:ss} %n日志内容：%m %n----------------------------------------------------------------------%n%n%n" />
+		</layout>
+
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="WARN" />
+			<param name="LevelMax" value="WARN" />
+		</filter>
+	</appender>
+
+	<!-- error级别日志文件 -->
+	<appender name="ERROR" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="Threshold" value="ERROR" />
+		<param name="File" value="$${loghome}/23gou/shop/error.log" />
+		<param name="Append" value="true" />
+		<param name="DatePattern" value="yyyy-MM-dd-HH" />
+
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%n服务器运行时间：%r 线程名：[%t] %n日志位置：%l %n记录器logger名称：%c %n日志等级：%-5p %n发生时间：%d{yyyy-MM-dd HH:mm:ss} %n日志内容：%m %n----------------------------------------------------------------------%n%n%n" />
+		</layout>
+
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="ERROR" />
+			<param name="LevelMax" value="ERROR" />
+		</filter>
+	</appender>
+
+	<appender name="SQL" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="$${loghome}/23gou/shop/sql.log" />
+		<param name="Append" value="true" />
+		<param name="DatePattern" value="yyyy-MM-dd-HH" />
+
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%n服务器运行时间：%r 线程名：[%t] %n日志位置：%l %n记录器logger名称：%c %n日志等级：%-5p %n发生时间：%d{yyyy-MM-dd HH:mm:ss} %n日志内容：%m %n----------------------------------------------------------------------%n%n%n" />
+		</layout>
+	</appender>
+
+	<!-- 指定logger的设置，name=java中的package 名称，additivity指示是否遵循缺省的继承机制 -->
+	<logger name="net.sf.log4jdbc" additivity="false">
+		<level value="${log.level}" />
+		<appender-ref ref="SQL" />
+		<appender-ref ref="CONSOLE_ALL" />
+	</logger>
+
+	<logger name="org.apache.ibatis" additivity="false">
+		<level value="${log.level}" />
+		<appender-ref ref="SQL" />
+		<appender-ref ref="CONSOLE_ALL" />
+	</logger>
+
+	<logger name="jdbc" additivity="false">
+		<level value="${log.level}" />
+		<appender-ref ref="SQL" />
+		<appender-ref ref="CONSOLE_ALL" />
+	</logger>
+
+	<!-- 定时器 -->
+	<logger name="org.quartz" additivity="false">
+		<level value="ERROR" />
+		<appender-ref ref="ERROR" />
+		<appender-ref ref="CONSOLE_ALL" />
+	</logger>
+
+	<root>
+		<level value="${log.level}" />
+		<appender-ref ref="CONSOLE_ALL" />
+		<appender-ref ref="DEBUG" />
+		<appender-ref ref="INFO" />
+		<appender-ref ref="WARN" />
+		<appender-ref ref="ERROR" />
+	</root>
+</log4j:configuration>
