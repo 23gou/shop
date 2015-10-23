@@ -164,8 +164,7 @@ public class AiTaobaoItemSourceParseImpl implements ItemSourceParse {
 							// 超过的丢弃
 							for (char c : title.toCharArray()) {
 								int ci = (int) c;
-
-								if (ci <= 255) {
+								if (ci <= 127) {
 									titleLength += 1;
 								} else {
 									titleLength += 2;

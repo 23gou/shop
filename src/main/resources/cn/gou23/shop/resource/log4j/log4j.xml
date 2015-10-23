@@ -95,6 +95,17 @@
 				value="%n服务器运行时间：%r 线程名：[%t] %n日志位置：%l %n记录器logger名称：%c %n日志等级：%-5p %n发生时间：%d{yyyy-MM-dd HH:mm:ss} %n日志内容：%m %n----------------------------------------------------------------------%n%n%n" />
 		</layout>
 	</appender>
+	
+	<appender name="item" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="$${loghome}/23gou/shop/item.log" />
+		<param name="Append" value="true" />
+		<param name="DatePattern" value="yyyy-MM-dd-HH" />
+
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%n服务器运行时间：%r 线程名：[%t] %n日志位置：%l %n记录器logger名称：%c %n日志等级：%-5p %n发生时间：%d{yyyy-MM-dd HH:mm:ss} %n日志内容：%m %n----------------------------------------------------------------------%n%n%n" />
+		</layout>
+	</appender>
 
 	<!-- 指定logger的设置，name=java中的package 名称，additivity指示是否遵循缺省的继承机制 -->
 	<logger name="net.sf.log4jdbc" additivity="false">
@@ -112,6 +123,12 @@
 	<logger name="jdbc" additivity="false">
 		<level value="${log.level}" />
 		<appender-ref ref="SQL" />
+		<appender-ref ref="CONSOLE_ALL" />
+	</logger>
+	
+	<logger name="cn.gou23.shop.model.ItemSourceModel" additivity="false">
+		<level value="${log.level}" />
+		<appender-ref ref="item" />
 		<appender-ref ref="CONSOLE_ALL" />
 	</logger>
 

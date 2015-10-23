@@ -18,7 +18,13 @@ public class ItemSourceModel extends ItemSourceEntity {
 	/**
 	 * 最低折扣
 	 */
-	private static final BigDecimal MIN_PROFIT = BigDecimal.valueOf(25);
+	private static final BigDecimal MIN_PROFIT = BigDecimal.valueOf(30);
+
+	/**
+	 * 最低进货折扣价
+	 */
+	private static final BigDecimal MIN_PURCHASE_DISCOUNT_PRICE = BigDecimal
+			.valueOf(50);
 	/**
 	 * 描述：
 	 */
@@ -57,6 +63,13 @@ public class ItemSourceModel extends ItemSourceEntity {
 					getSourceDetailUrl());
 			return true;
 		}
+
+		if (getPurchaseDiscountPrice().compareTo(MIN_PURCHASE_DISCOUNT_PRICE) < 0) {
+			UtilLog.debug("进货折扣过低，需要下架，折扣（返利）{}，商品ID{}，URL{}",
+					getPurchaseDiscountPrice(), getItemId(),
+					getSourceDetailUrl());
+			return true;
+		}
 		return false;
 	}
 
@@ -67,9 +80,10 @@ public class ItemSourceModel extends ItemSourceEntity {
 				BigDecimal.valueOf(2)).setScale(2, BigDecimal.ROUND_DOWN);
 
 		// 不够最低利润
-		//进货价-进货折扣+最低利润
+		// 进货价-进货折扣+最低利润
 		if (myDiscountPrice.compareTo(MIN_PROFIT) < 0) {
-			return getPurchasePrice().subtract(getPurchaseDiscountPrice()).add(MIN_PROFIT);
+			return getPurchasePrice().subtract(getPurchaseDiscountPrice()).add(
+					MIN_PROFIT);
 		} else {
 			return getPurchasePrice().subtract(myDiscountPrice);
 		}
