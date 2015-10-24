@@ -24,7 +24,7 @@ public class ItemSourceModel extends ItemSourceEntity {
 	 * 最低进货折扣价
 	 */
 	private static final BigDecimal MIN_PURCHASE_DISCOUNT_PRICE = BigDecimal
-			.valueOf(50);
+			.valueOf(40);
 	/**
 	 * 描述：
 	 */
