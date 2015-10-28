@@ -80,11 +80,20 @@ public class ItemSourceServiceImpl implements ItemSourceService {
 			criteria.andTitleLike("%" + itemSourceModel.getTitle() + "%");
 		}
 
+		
 		if (itemSourceModel.getSaleStatus() != null) {
-			criteria.andSaleStatusEqualTo(SaleStatus.创建);
+			criteria.andSaleStatusEqualTo(itemSourceModel.getSaleStatus());
+		}
+		
+		if (StringUtils.isNotBlank(itemSourceModel.getItemId())) {
+			criteria = itemSourceEntityCondition.or();
+			criteria.andItemIdLike("%" + itemSourceModel.getItemId() + "%");
+			if (itemSourceModel.getSaleStatus() != null) {
+				criteria.andSaleStatusEqualTo(itemSourceModel.getSaleStatus());
+			}
 		}
 
-		criteria.andSaleStatusNotEqualTo(SaleStatus.下架);
+//		criteria.andSaleStatusNotEqualTo(SaleStatus.下架);
 
 		return itemSourceEntityMapper
 				.selectByExample(itemSourceEntityCondition);
@@ -195,15 +204,17 @@ public class ItemSourceServiceImpl implements ItemSourceService {
 
 		criteria.andTypeEqualTo(itemSourceModel.getType())
 				.andSourceOwnerEqualTo(itemSourceModel.getSourceOwner());
-		
-		List<SourceBlacklistModel> sourceBlacklistModels = sourceBlacklistEntityMapper.selectByExample(sourceBlacklistEntityCondition);
-		
-		if(sourceBlacklistModels.size() > 0) {
+
+		List<SourceBlacklistModel> sourceBlacklistModels = sourceBlacklistEntityMapper
+				.selectByExample(sourceBlacklistEntityCondition);
+
+		if (sourceBlacklistModels.size() > 0) {
 			return;
 		} else {
 			SourceBlacklistModel sourceBlacklistModel = new SourceBlacklistModel();
-			
-			sourceBlacklistModel.setSourceOwner(itemSourceModel.getSourceOwner());
+
+			sourceBlacklistModel.setSourceOwner(itemSourceModel
+					.getSourceOwner());
 			sourceBlacklistModel.setType(itemSourceModel.getType());
 			sourceBlacklistEntityMapper.insert(sourceBlacklistModel);
 		}

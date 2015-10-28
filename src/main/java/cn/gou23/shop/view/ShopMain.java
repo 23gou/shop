@@ -203,6 +203,7 @@ public class ShopMain {
 			public void widgetSelected(SelectionEvent e) {
 				ItemSourceModel itemSourceModel = new ItemSourceModel();
 				itemSourceModel.setTitle(text_1.getText());
+				itemSourceModel.setItemId(text_1.getText().trim());
 				List<ItemSourceModel> itemSourceModels = itemSourceService
 						.find(itemSourceModel);
 				reviewTable(itemSourceModels);
@@ -494,9 +495,14 @@ public class ShopMain {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
+		TableColumn tblclmnStatus = new TableColumn(table, SWT.NONE);
+		tblclmnStatus.setWidth(35);
+		tblclmnStatus.setText("状态");
+		
 		TableColumn tblclmnUrl = new TableColumn(table, SWT.NONE);
 		tblclmnUrl.setWidth(35);
 		tblclmnUrl.setText("URL");
+		
 
 		// ID列只能放在最后一列
 		TableColumn tblclmnId = new TableColumn(table, SWT.NONE);
@@ -632,6 +638,7 @@ public class ShopMain {
 			item.setText(4, itemSourceModel.getPurchaseDiscountPrice()
 					.toString());
 			item.setText(5, itemSourceModel.getProfit().toString());
+			item.setText(6, itemSourceModel.getSaleStatus().toString());
 			item.setText(table.getColumnCount() - 2, itemSourceModel
 					.getSourceDetailUrl().toString());
 			// ID列只能放在最后一列
