@@ -5,7 +5,9 @@ import org.springframework.stereotype.Component;
 
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.ItemUpdateDelistingRequest;
+import com.taobao.api.request.ItemUpdateRequest;
 import com.taobao.api.response.ItemUpdateDelistingResponse;
+import com.taobao.api.response.ItemUpdateResponse;
 
 /**
  * 
@@ -34,6 +36,28 @@ public class ItemApi {
 		req.setNumIid(numIid);
 		ItemUpdateDelistingResponse response = taobaoClient.execute(req,
 				sessionKey);
+
+		// 确保在对方设置过
+
+		if (response.getErrorCode() != null) {
+			throw new RuntimeException(response.getMsg());
+		}
+	}
+
+	/**
+	 * 
+	 * 描述:修改标题
+	 * 
+	 * @param numIid
+	 * @author liyixing 2015年8月17日 下午12:33:23
+	 * @throws Exception
+	 */
+	public void updateTitle(Long numIid, String title, String sessionKey)
+			throws Exception {
+		ItemUpdateRequest req = new ItemUpdateRequest();
+		req.setNumIid(numIid);
+		req.setTitle(title);
+		ItemUpdateResponse response = taobaoClient.execute(req, sessionKey);
 
 		// 确保在对方设置过
 

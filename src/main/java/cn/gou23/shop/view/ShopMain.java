@@ -54,6 +54,7 @@ import cn.gou23.cgodo.page.PageContext;
 import cn.gou23.cgodo.util.UtilBean;
 import cn.gou23.cgodo.util.UtilDateTime;
 import cn.gou23.cgodo.util.UtilLog;
+import cn.gou23.cgodo.util.UtilMisc;
 import cn.gou23.shop.constant.SaleStatus;
 import cn.gou23.shop.constant.SourceType;
 import cn.gou23.shop.model.ItemSourceModel;
@@ -498,11 +499,10 @@ public class ShopMain {
 		TableColumn tblclmnStatus = new TableColumn(table, SWT.NONE);
 		tblclmnStatus.setWidth(35);
 		tblclmnStatus.setText("状态");
-		
+
 		TableColumn tblclmnUrl = new TableColumn(table, SWT.NONE);
 		tblclmnUrl.setWidth(35);
 		tblclmnUrl.setText("URL");
-		
 
 		// ID列只能放在最后一列
 		TableColumn tblclmnId = new TableColumn(table, SWT.NONE);
@@ -735,7 +735,6 @@ public class ShopMain {
 							} else {
 								PageContext.clear();
 								browser.removeProgressListener(this);
-								errorMessage("更新店铺商品信息完成");
 								// 关联店铺销售信息
 								relationShop(SaleStatus.创建);
 							}
@@ -784,7 +783,6 @@ public class ShopMain {
 							} else {
 								PageContext.clear();
 								browser.removeProgressListener(this);
-								errorMessage("更新店铺商品信息完成");
 								// 关联店铺销售信息
 								relationShop();
 							}
@@ -877,6 +875,14 @@ public class ShopMain {
 									} else {
 										itemSourceService
 												.saveSource(currentItemSourceModel);
+										// 更新标题
+										itemApi.updateTitle(Long
+												.valueOf(currentItemSourceModel
+														.getItemId()),
+												currentItemSourceModel
+														.getTitle(), getShop()
+														.getSessionKey());
+
 									}
 								}
 							} catch (Exception e) {
@@ -1002,6 +1008,17 @@ public class ShopMain {
 			// 标题
 			notOffItemSourceModels = itemSourceService
 					.getNotOff(itemSourceModel);
+
+			List<String> titles = UtilBean.beansFieldTolist(
+					notOffItemSourceModels, "title");
+
+			// 检查不存在的
+			for (ItemSourceModel itemSourceModelOfShop : itemSourceModelsOfShopAll) {
+				if (!titles.contains(itemSourceModelOfShop.getTitle())) {
+					UtilLog.debug("商品名称：{}，在货源中不存在",
+							itemSourceModelOfShop.getTitle());
+				}
+			}
 		}
 		Map<String, ItemSourceModel> itemSourceModelsOfShopAllByItemId = UtilBean
 				.beansGroupByPkField(itemSourceModelsOfShopAll, "itemId");
@@ -1044,6 +1061,8 @@ public class ShopMain {
 				itemSourceService.saveSource(itemSourceModelNotOff);
 			}
 		}
+
+		errorMessage("更新店铺商品信息完成");
 	}
 
 	/**
