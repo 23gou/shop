@@ -1,7 +1,14 @@
 package cn.gou23.shop.taobaoapi;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.beanutils.PropertyUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import cn.gou23.cgodo.util.UtilHtml;
 
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.ItemUpdateDelistingRequest;
@@ -63,6 +70,42 @@ public class ItemApi {
 
 		if (response.getErrorCode() != null) {
 			throw new RuntimeException(response.getMsg());
+		}
+	}
+
+	/**
+	 * 
+	 * 描述:获取总销量
+	 * 
+	 * @param id
+	 * @return
+	 * @author liyixing 2015年10月30日 下午3:26:11
+	 */
+	public Long getTotalSoldQuantity(String id) {
+		String content = null;
+		try {
+			content = UtilHtml
+					.requestHttp("http://hws.m.taobao.com/cache/wdetail/5.0/?id="
+							+ id);
+			ObjectMapper objectMapper = new ObjectMapper();
+
+			/**
+			 * 解析结果
+			 */
+			Object ret = objectMapper.readValue(content, Map.class);
+			// api内部
+			List<Object> apiStack = (List<Object>) PropertyUtils.getProperty(
+					ret, "data.apiStack");
+			// 内部堆栈第一次解析出来是字符串，需要再次解析一次
+			Map<String, Object> apiStackVal = objectMapper.readValue(
+					((Map<String, Object>) apiStack.get(0)).get("value")
+							.toString(), Map.class);
+
+			return Long.valueOf(PropertyUtils.getProperty(apiStackVal,
+					"data.itemInfoModel.totalSoldQuantity")
+					.toString());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 }

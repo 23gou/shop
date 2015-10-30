@@ -54,7 +54,6 @@ import cn.gou23.cgodo.page.PageContext;
 import cn.gou23.cgodo.util.UtilBean;
 import cn.gou23.cgodo.util.UtilDateTime;
 import cn.gou23.cgodo.util.UtilLog;
-import cn.gou23.cgodo.util.UtilMisc;
 import cn.gou23.shop.constant.SaleStatus;
 import cn.gou23.shop.constant.SourceType;
 import cn.gou23.shop.model.ItemSourceModel;
@@ -475,7 +474,7 @@ public class ShopMain {
 		tblclmnNewColumn.setText("\u56FE\u7247");
 
 		TableColumn tblclmnNewColumn_1 = new TableColumn(table, SWT.NONE);
-		tblclmnNewColumn_1.setWidth(200);
+		tblclmnNewColumn_1.setWidth(400);
 		tblclmnNewColumn_1.setText("\u6807\u9898");
 
 		TableColumn tableColumn = new TableColumn(table, SWT.NONE);
@@ -496,12 +495,26 @@ public class ShopMain {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
+		TableColumn tblclmnDefaultPrice = new TableColumn(table, SWT.NONE);
+		tblclmnDefaultPrice.setWidth(100);
+		tblclmnDefaultPrice.setText("默认价");
+
 		TableColumn tblclmnStatus = new TableColumn(table, SWT.NONE);
-		tblclmnStatus.setWidth(35);
+		tblclmnStatus.setWidth(80);
 		tblclmnStatus.setText("状态");
 
+		TableColumn tblclmnSourceTotalSoldQuantity = new TableColumn(table,
+				SWT.NONE);
+		tblclmnSourceTotalSoldQuantity.setWidth(100);
+		tblclmnSourceTotalSoldQuantity.setText("货源销量");
+
+		TableColumn tblclmnMyTotalSoldQuantity = new TableColumn(table,
+				SWT.NONE);
+		tblclmnMyTotalSoldQuantity.setWidth(100);
+		tblclmnMyTotalSoldQuantity.setText("本地销量");
+
 		TableColumn tblclmnUrl = new TableColumn(table, SWT.NONE);
-		tblclmnUrl.setWidth(35);
+		tblclmnUrl.setWidth(100);
 		tblclmnUrl.setText("URL");
 
 		// ID列只能放在最后一列
@@ -638,7 +651,13 @@ public class ShopMain {
 			item.setText(4, itemSourceModel.getPurchaseDiscountPrice()
 					.toString());
 			item.setText(5, itemSourceModel.getProfit().toString());
-			item.setText(6, itemSourceModel.getSaleStatus().toString());
+			item.setText(6, itemSourceModel.countDefaultPrice().toString());
+			item.setText(7, itemSourceModel.getSaleStatus().toString());
+
+			item.setText(8, itemSourceModel.getSourceTotalSoldQuantity()
+					.toString());
+			item.setText(9, itemSourceModel.getMyTotalSoldQuantity().toString());
+
 			item.setText(table.getColumnCount() - 2, itemSourceModel
 					.getSourceDetailUrl().toString());
 			// ID列只能放在最后一列
@@ -947,6 +966,30 @@ public class ShopMain {
 					errorMessage(itemSourceParse.syncItemSourceSku(
 							itemSourceService.find(new ItemSourceModel()),
 							getShop().getSessionKey()));
+				}
+			}
+		});
+
+		// 更新淘宝销售数量
+		MenuItem itemAiTaobaoSoldQun = new MenuItem(menu, SWT.PUSH);
+		itemAiTaobaoSoldQun.setText("更新淘宝销售数量");
+		itemAiTaobaoSoldQun.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				List<ItemSourceModel> itemSourceModels;
+
+				if (table.getSelectionIndex() >= 0) {
+					ItemSourceModel itemSourceModel = itemSourceService
+							.get(table.getItem(table.getSelectionIndex())
+									.getText(table.getColumnCount() - 1));
+					itemSourceModels = new ArrayList<ItemSourceModel>();
+					itemSourceModels.add(itemSourceModel);
+
+					itemSourceParse.syncTotalSoldQuantity(itemSourceModels);
+					errorMessage("同步销量成功！");
+				} else {
+					itemSourceParse.syncTotalSoldQuantity(itemSourceService
+							.find(new ItemSourceModel()));
+					errorMessage("同步销量成功！");
 				}
 			}
 		});

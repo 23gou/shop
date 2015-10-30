@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,8 @@ import cn.gou23.cgodo.util.UtilUrl;
 import cn.gou23.shop.constant.SourceType;
 import cn.gou23.shop.model.ItemSourceModel;
 import cn.gou23.shop.parse.ItemSourceParse;
+import cn.gou23.shop.service.ItemSourceService;
+import cn.gou23.shop.taobaoapi.ItemApi;
 import cn.gou23.shop.taobaoapi.SkuApi;
 import cn.gou23.shop.taobaoapi.SkuApi.Sku;
 
@@ -33,6 +36,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class AiTaobaoItemSourceParseImpl implements ItemSourceParse {
 	@Autowired
 	private SkuApi skuApi;
+	@Autowired
+	private ItemApi itemApi;
+	@Autowired
+	private ItemSourceService ItemSourceService;
 
 	@Override
 	public String parseSourceId(String url) {
@@ -256,5 +263,28 @@ public class AiTaobaoItemSourceParseImpl implements ItemSourceParse {
 		}
 
 		return "成功" + success + "失败" + failure;
+	}
+
+	@Override
+	public void syncTotalSoldQuantity(List<ItemSourceModel> itemSourceModels) {
+		// 成功
+		// int success = 0;
+		// 失败
+		// int failure = 0;
+
+		for (ItemSourceModel itemSourceModel : itemSourceModels) {
+			if (StringUtils.isNotBlank(itemSourceModel.getItemId())) {
+				itemSourceModel.setMyTotalSoldQuantity(itemApi
+						.getTotalSoldQuantity(itemSourceModel.getItemId()));
+			}
+
+			if (StringUtils.isNotBlank(itemSourceModel.getSourceId())) {
+				itemSourceModel.setSourceTotalSoldQuantity(itemApi
+						.getTotalSoldQuantity(itemSourceModel.getSourceId()));
+			}
+			ItemSourceService.saveSource(itemSourceModel);
+		}
+
+		// return "成功" + success + "失败" + failure;
 	}
 }

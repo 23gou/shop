@@ -38,6 +38,18 @@ public interface ItemSourceParse {
 
 	/**
 	 * 
+	 * 描述:读取最新的销售数
+	 * 
+	 * @param shopId
+	 * @param sessionKey
+	 * @param updatePrice
+	 * @return
+	 * @author liyixing 2015年8月26日 下午3:38:39
+	 */
+	public void syncTotalSoldQuantity(List<ItemSourceModel> itemSourceModels);
+	
+	/**
+	 * 
 	 * 描述:读取最新的SKU数据
 	 * 
 	 * @param shopId

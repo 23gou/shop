@@ -48,8 +48,8 @@
 		<!-- connectionURL="jdbc:paradox:/${user.home}/23gou" userId="" password="" 
 			/> -->
 		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
-			connectionURL="jdbc:mysql://221.231.6.226:3306/a0826103329?useUnicode=false&amp;autoReconnect=true&amp;characterEncoding=utf-8"
-			userId="a0826103329" password="91337934" />
+			connectionURL="jdbc:mysql://127.0.0.1:3306/shop?useUnicode=false&amp;autoReconnect=true&amp;characterEncoding=utf-8"
+			userId="root" password="" />
 
 		<javaModelGenerator targetPackage="cn.gou23.shop.entity"
 			targetProject="../src/main/java">

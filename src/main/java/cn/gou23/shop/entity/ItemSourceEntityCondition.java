@@ -167,6 +167,8 @@ public class ItemSourceEntityCondition {
      * <li>endDate 截止日，过了这个时间就不能进货</li>
      * <li>img 图片</li>
      * <li>sourceOwner 货源所属人</li>
+     * <li>myTotalSoldQuantity 本店铺销量</li>
+     * <li>sourceTotalSoldQuantity 货源销量</li>
      * </ul>
      *
      * @mbggenerated
@@ -1212,6 +1214,126 @@ public class ItemSourceEntityCondition {
             return (Criteria) this;
         }
 
+        public Criteria andMyTotalSoldQuantityIsNull() {
+            addCriterion("MY_TOTAL_SOLD_QUANTITY is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMyTotalSoldQuantityIsNotNull() {
+            addCriterion("MY_TOTAL_SOLD_QUANTITY is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMyTotalSoldQuantityEqualTo(Long value) {
+            addCriterion("MY_TOTAL_SOLD_QUANTITY =", value, "myTotalSoldQuantity");
+            return (Criteria) this;
+        }
+
+        public Criteria andMyTotalSoldQuantityNotEqualTo(Long value) {
+            addCriterion("MY_TOTAL_SOLD_QUANTITY <>", value, "myTotalSoldQuantity");
+            return (Criteria) this;
+        }
+
+        public Criteria andMyTotalSoldQuantityGreaterThan(Long value) {
+            addCriterion("MY_TOTAL_SOLD_QUANTITY >", value, "myTotalSoldQuantity");
+            return (Criteria) this;
+        }
+
+        public Criteria andMyTotalSoldQuantityGreaterThanOrEqualTo(Long value) {
+            addCriterion("MY_TOTAL_SOLD_QUANTITY >=", value, "myTotalSoldQuantity");
+            return (Criteria) this;
+        }
+
+        public Criteria andMyTotalSoldQuantityLessThan(Long value) {
+            addCriterion("MY_TOTAL_SOLD_QUANTITY <", value, "myTotalSoldQuantity");
+            return (Criteria) this;
+        }
+
+        public Criteria andMyTotalSoldQuantityLessThanOrEqualTo(Long value) {
+            addCriterion("MY_TOTAL_SOLD_QUANTITY <=", value, "myTotalSoldQuantity");
+            return (Criteria) this;
+        }
+
+        public Criteria andMyTotalSoldQuantityIn(List<Long> values) {
+            addCriterion("MY_TOTAL_SOLD_QUANTITY in", values, "myTotalSoldQuantity");
+            return (Criteria) this;
+        }
+
+        public Criteria andMyTotalSoldQuantityNotIn(List<Long> values) {
+            addCriterion("MY_TOTAL_SOLD_QUANTITY not in", values, "myTotalSoldQuantity");
+            return (Criteria) this;
+        }
+
+        public Criteria andMyTotalSoldQuantityBetween(Long value1, Long value2) {
+            addCriterion("MY_TOTAL_SOLD_QUANTITY between", value1, value2, "myTotalSoldQuantity");
+            return (Criteria) this;
+        }
+
+        public Criteria andMyTotalSoldQuantityNotBetween(Long value1, Long value2) {
+            addCriterion("MY_TOTAL_SOLD_QUANTITY not between", value1, value2, "myTotalSoldQuantity");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceTotalSoldQuantityIsNull() {
+            addCriterion("SOURCE_TOTAL_SOLD_QUANTITY is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceTotalSoldQuantityIsNotNull() {
+            addCriterion("SOURCE_TOTAL_SOLD_QUANTITY is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceTotalSoldQuantityEqualTo(Long value) {
+            addCriterion("SOURCE_TOTAL_SOLD_QUANTITY =", value, "sourceTotalSoldQuantity");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceTotalSoldQuantityNotEqualTo(Long value) {
+            addCriterion("SOURCE_TOTAL_SOLD_QUANTITY <>", value, "sourceTotalSoldQuantity");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceTotalSoldQuantityGreaterThan(Long value) {
+            addCriterion("SOURCE_TOTAL_SOLD_QUANTITY >", value, "sourceTotalSoldQuantity");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceTotalSoldQuantityGreaterThanOrEqualTo(Long value) {
+            addCriterion("SOURCE_TOTAL_SOLD_QUANTITY >=", value, "sourceTotalSoldQuantity");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceTotalSoldQuantityLessThan(Long value) {
+            addCriterion("SOURCE_TOTAL_SOLD_QUANTITY <", value, "sourceTotalSoldQuantity");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceTotalSoldQuantityLessThanOrEqualTo(Long value) {
+            addCriterion("SOURCE_TOTAL_SOLD_QUANTITY <=", value, "sourceTotalSoldQuantity");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceTotalSoldQuantityIn(List<Long> values) {
+            addCriterion("SOURCE_TOTAL_SOLD_QUANTITY in", values, "sourceTotalSoldQuantity");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceTotalSoldQuantityNotIn(List<Long> values) {
+            addCriterion("SOURCE_TOTAL_SOLD_QUANTITY not in", values, "sourceTotalSoldQuantity");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceTotalSoldQuantityBetween(Long value1, Long value2) {
+            addCriterion("SOURCE_TOTAL_SOLD_QUANTITY between", value1, value2, "sourceTotalSoldQuantity");
+            return (Criteria) this;
+        }
+
+        public Criteria andSourceTotalSoldQuantityNotBetween(Long value1, Long value2) {
+            addCriterion("SOURCE_TOTAL_SOLD_QUANTITY not between", value1, value2, "sourceTotalSoldQuantity");
+            return (Criteria) this;
+        }
+
         public Criteria andIdLikeInsensitive(String value) {
             addCriterion("upper(ID) like", value.toUpperCase(), "id");
             return (Criteria) this;
@@ -1269,6 +1391,8 @@ public class ItemSourceEntityCondition {
      * <li>endDate 截止日，过了这个时间就不能进货</li>
      * <li>img 图片</li>
      * <li>sourceOwner 货源所属人</li>
+     * <li>myTotalSoldQuantity 本店铺销量</li>
+     * <li>sourceTotalSoldQuantity 货源销量</li>
      * </ul>
      *
      * @mbggenerated do_not_delete_during_merge
@@ -1296,6 +1420,8 @@ public class ItemSourceEntityCondition {
      * <li>endDate 截止日，过了这个时间就不能进货</li>
      * <li>img 图片</li>
      * <li>sourceOwner 货源所属人</li>
+     * <li>myTotalSoldQuantity 本店铺销量</li>
+     * <li>sourceTotalSoldQuantity 货源销量</li>
      * </ul>
      *
      * @mbggenerated

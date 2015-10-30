@@ -24,7 +24,7 @@ public class ItemSourceModel extends ItemSourceEntity {
 	 * 最低进货折扣价
 	 */
 	private static final BigDecimal MIN_PURCHASE_DISCOUNT_PRICE = BigDecimal
-			.valueOf(40);
+			.valueOf(50);
 	/**
 	 * 描述：
 	 */
@@ -73,6 +73,13 @@ public class ItemSourceModel extends ItemSourceEntity {
 		return false;
 	}
 
+	/**
+	 * 
+	 * 描述:默认价格
+	 * 
+	 * @return
+	 * @author liyixing 2015年10月30日 下午3:52:26
+	 */
 	public BigDecimal countDefaultPrice() {
 		// 计算默认销售价
 		// 店铺销售价相对进货价的折扣价未进货折扣价的一半
@@ -88,4 +95,22 @@ public class ItemSourceModel extends ItemSourceEntity {
 			return getPurchasePrice().subtract(myDiscountPrice);
 		}
 	}
+
+	/**
+	 * 本店铺销量
+	 *
+	 * @mbggenerated do_not_delete_during_merge
+	 */
+	public Long getMyTotalSoldQuantity() {
+		return super.getMyTotalSoldQuantity() == null ? 0l : super.getMyTotalSoldQuantity();
+	}
+	
+	/**
+     * 货源销量
+     *
+     * @mbggenerated do_not_delete_during_merge
+     */
+    public Long getSourceTotalSoldQuantity() {
+        return super.getSourceTotalSoldQuantity() == null ? 0l : super.getSourceTotalSoldQuantity();
+    }
 }

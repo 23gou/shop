@@ -1,13 +1,8 @@
 package cn.gou23.shop.taobaoapi;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +14,8 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import cn.gou23.cgodo.util.UtilHtml;
 
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.ItemSkuAddRequest;
@@ -156,7 +153,7 @@ public class SkuApi {
 	 */
 	public List<Sku> getSkuProperties(Long id) throws Exception {
 		String content = null;
-		content = requestHttp("http://hws.m.taobao.com/cache/wdetail/5.0/?id="
+		content = UtilHtml.requestHttp("http://hws.m.taobao.com/cache/wdetail/5.0/?id="
 				+ id);
 
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -226,35 +223,6 @@ public class SkuApi {
 		}
 
 		return skus;
-	}
-
-	/**
-	 * 描述:http请求
-	 * 
-	 * @param id
-	 * @return
-	 * @throws MalformedURLException
-	 * @throws IOException
-	 * @author liyixing 2015年8月16日 下午3:52:35
-	 */
-
-	private static final String requestHttp(String url_)
-			throws MalformedURLException, IOException {
-		String content;
-		// 稳定移动端API，来获取销售属性
-		StringBuffer html = new StringBuffer();
-		URL url = new URL(url_);
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		InputStreamReader isr = new InputStreamReader(conn.getInputStream());
-		BufferedReader br = new BufferedReader(isr);
-		String temp;
-		while ((temp = br.readLine()) != null) {
-			html.append(temp).append("\n");
-		}
-		br.close();
-		isr.close();
-		content = html.toString();
-		return content;
 	}
 
 	/**
