@@ -49,6 +49,9 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.springframework.beans.BeanUtils;
 
+import com.taobao.api.DefaultTaobaoClient;
+import com.taobao.api.TaobaoClient;
+
 import cn.gou23.cgodo.page.Page;
 import cn.gou23.cgodo.page.PageContext;
 import cn.gou23.cgodo.util.UtilBean;
@@ -59,7 +62,7 @@ import cn.gou23.shop.constant.SourceType;
 import cn.gou23.shop.model.ItemSourceModel;
 import cn.gou23.shop.model.ShopModel;
 import cn.gou23.shop.model.SourceOwnerModel;
-import cn.gou23.shop.parse.ItemSourceParse;
+import cn.gou23.shop.parse.ItemSourceHandler;
 import cn.gou23.shop.service.ItemSourceService;
 import cn.gou23.shop.service.ShopService;
 import cn.gou23.shop.service.SourceOwnerService;
@@ -67,14 +70,11 @@ import cn.gou23.shop.taobaoapi.ItemApi;
 import cn.gou23.shop.util.UtilApplicationContext;
 import cn.gou23.shop.util.UtilImage;
 
-import com.taobao.api.DefaultTaobaoClient;
-import com.taobao.api.TaobaoClient;
-
 public class ShopMain {
 
 	protected Shell shell;
 	private Text text;
-	private static ItemSourceParse itemSourceParse;
+	private static ItemSourceHandler itemSourceHandler;
 	private static ItemSourceService itemSourceService;
 	private static ShopService shopService;
 	private static Map<String, ShopModel> shopModelByName = new HashMap<String, ShopModel>();
@@ -110,7 +110,7 @@ public class ShopMain {
 		try {
 			// 读取spring
 			UtilApplicationContext.load();
-			itemSourceParse = UtilApplicationContext.get(ItemSourceParse.class);
+			itemSourceHandler = UtilApplicationContext.get(ItemSourceHandler.class);
 			itemSourceService = UtilApplicationContext
 					.get(ItemSourceService.class);
 			shopService = UtilApplicationContext.get(ShopService.class);
@@ -396,7 +396,7 @@ public class ShopMain {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				String url = text.getText();
-				String sourceId = itemSourceParse.parseSourceId(url);
+				String sourceId = itemSourceHandler.parseSourceId(url);
 
 				if (StringUtils.isBlank(sourceId)) {
 					errorMessage("无效的货源地址");
@@ -432,7 +432,7 @@ public class ShopMain {
 				ProgressAdapter addSourceListener = new ProgressAdapter() {
 					public void completed(ProgressEvent event) {
 						try {
-							itemSourceParse.parseInfo(newItemSourceModel,
+							itemSourceHandler.parseInfo(newItemSourceModel,
 									browser.getText());
 						} catch (Exception e) {
 							errorMessage("淘宝解析失败，是否已经登录淘宝客？");
@@ -864,7 +864,7 @@ public class ShopMain {
 					ProgressAdapter addSourceListener = new ProgressAdapter() {
 						public void completed(ProgressEvent event) {
 							try {
-								if (!itemSourceParse.parseInfo(
+								if (!itemSourceHandler.parseInfo(
 										currentItemSourceModel,
 										browser.getText())) {
 									// 淘宝客无效，下架
@@ -974,10 +974,10 @@ public class ShopMain {
 					itemSourceModels = new ArrayList<ItemSourceModel>();
 					itemSourceModels.add(itemSourceModel);
 
-					errorMessage(itemSourceParse.syncItemSourceSku(
+					errorMessage(itemSourceHandler.syncItemSourceSku(
 							itemSourceModels, getShop().getSessionKey()));
 				} else {
-					errorMessage(itemSourceParse.syncItemSourceSku(
+					errorMessage(itemSourceHandler.syncItemSourceSku(
 							itemSourceService.find(new ItemSourceModel()),
 							getShop().getSessionKey()));
 				}
@@ -998,10 +998,10 @@ public class ShopMain {
 					itemSourceModels = new ArrayList<ItemSourceModel>();
 					itemSourceModels.add(itemSourceModel);
 
-					itemSourceParse.syncTotalSoldQuantity(itemSourceModels);
+					itemSourceHandler.syncTotalSoldQuantity(itemSourceModels);
 					errorMessage("同步销量成功！");
 				} else {
-					itemSourceParse.syncTotalSoldQuantity(itemSourceService
+					itemSourceHandler.syncTotalSoldQuantity(itemSourceService
 							.find(new ItemSourceModel()));
 					errorMessage("同步销量成功！");
 				}
