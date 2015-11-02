@@ -229,6 +229,11 @@ public class ShopMain {
 					fileselect.setFilterExtensions(new String[] { "*.txt" });
 					String url = "";
 					url = fileselect.open();
+					
+					if(StringUtils.isBlank(url)) {
+						errorMessage("请选择导出的文件");
+						return;
+					}
 
 					if (!url.endsWith(".txt")) {
 						url = url + ".txt";
