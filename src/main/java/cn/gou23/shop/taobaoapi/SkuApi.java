@@ -132,7 +132,8 @@ public class SkuApi {
 			return skuPropsByTitle;
 		}
 
-		public void setSkuPropsByTitle(Map<String, Map<String, String>> skuPropsByTitle) {
+		public void setSkuPropsByTitle(
+				Map<String, Map<String, String>> skuPropsByTitle) {
 			this.skuPropsByTitle = skuPropsByTitle;
 		}
 	}
@@ -153,8 +154,9 @@ public class SkuApi {
 	 */
 	public List<Sku> getSkuProperties(Long id) throws Exception {
 		String content = null;
-		content = UtilHtml.requestHttp("http://hws.m.taobao.com/cache/wdetail/5.0/?id="
-				+ id);
+		content = UtilHtml
+				.requestHttp("http://hws.m.taobao.com/cache/wdetail/5.0/?id="
+						+ id);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		List<Sku> skus = new ArrayList<Sku>();
@@ -209,10 +211,11 @@ public class SkuApi {
 			Map<String, Object> values = (Map<String, Object>) skusMap.get(sku
 					.getId());
 			// 库存
-			sku.setQuantity(Long.valueOf(values.get("quantity").toString()));
+			sku.setQuantity(Long.valueOf(values == null ? "0" : values.get(
+					"quantity").toString()));
 			// 价格
-			sku.setPrice(new BigDecimal(
-					((List<Map<String, Object>>) PropertyUtils.getProperty(
+			sku.setPrice(new BigDecimal(values == null ? "0"
+					: ((List<Map<String, Object>>) PropertyUtils.getProperty(
 							values, "priceUnits")).get(0).get("price")
 							.toString()));
 			sku.setNumId(id);

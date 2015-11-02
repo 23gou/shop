@@ -87,7 +87,7 @@ public class ItemSourceServiceImpl implements ItemSourceService {
 		
 		if (StringUtils.isNotBlank(itemSourceModel.getItemId())) {
 			criteria = itemSourceEntityCondition.or();
-			criteria.andItemIdLike("%" + itemSourceModel.getItemId() + "%");
+			criteria.andItemIdEqualTo(itemSourceModel.getItemId());
 			if (itemSourceModel.getSaleStatus() != null) {
 				criteria.andSaleStatusEqualTo(itemSourceModel.getSaleStatus());
 			}

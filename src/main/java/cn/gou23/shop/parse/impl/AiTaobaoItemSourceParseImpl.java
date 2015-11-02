@@ -154,7 +154,8 @@ public class AiTaobaoItemSourceParseImpl implements ItemSourceParse {
 
 						for (String p : ps) {
 							// 女装厚薄 常规款，淘宝助手对该属性无法导入
-							if (p.equals("-1:-1")) {
+							if (p.equals("-1:-1") || p.equals("-1:-2")
+									|| p.equals("-1:-3")) {
 								continue;
 							}
 							String[] z = p.split(":");

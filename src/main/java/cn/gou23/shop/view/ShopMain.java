@@ -892,15 +892,24 @@ public class ShopMain {
 										itemSourceService
 												.saveSource(currentItemSourceModel);
 									} else {
+										// 不需要下架，自动修改标题
 										itemSourceService
 												.saveSource(currentItemSourceModel);
-										// 更新标题
-										itemApi.updateTitle(Long
-												.valueOf(currentItemSourceModel
-														.getItemId()),
-												currentItemSourceModel
-														.getTitle(), getShop()
-														.getSessionKey());
+										if (StringUtils
+												.isNotBlank(currentItemSourceModel
+														.getItemId())) {
+											UtilLog.debug(
+													"宝贝：{}，已经关联店铺信息，需要自动同步标题",
+													currentItemSourceModel
+															.getTitle());
+											// 更新标题
+											itemApi.updateTitle(
+													Long.valueOf(currentItemSourceModel
+															.getItemId()),
+													currentItemSourceModel
+															.getTitle(),
+													getShop().getSessionKey());
+										}
 
 									}
 								}
