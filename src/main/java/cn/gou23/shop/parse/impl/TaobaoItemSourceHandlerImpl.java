@@ -62,11 +62,12 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 
 		// 去阿里妈妈读取商品详情
 		try {
-			Map<String, Object> result = objectMapper.readValue(
-					content.replace("<HTML>", "").replace("</HTML>", "").replace("<HEAD>", "").replace("<BODY>", "")
-							.replace("</HEAD>", "").replace("</BODY>", "").replace("<html>", "").replace("</html>", "")
-							.replace("<head>", "").replace("<body>", "").replace("</head>", "").replace("</body>", ""),
-					Map.class);
+			Map<String, Object> result = objectMapper
+					.readValue(content.replace("<HTML>", "").replace("</HTML>", "").replace("<HEAD>", "")
+							.replace("<BODY>", "").replace("</HEAD>", "").replace("</BODY>", "").replace("<html>", "")
+							.replace("</html>", "").replace("<head>", "").replace("<body>", "").replace("</head>", "")
+							.replace("</body>", "").replace("<html xmlns=\"http://www.w3.org/1999/xhtml\">", "")
+							.replace("<pre>", "").replace("</pre>", "").replace("</html>", ""), Map.class);
 			// 返回的结果
 			Integer length = Integer.valueOf(PropertyUtils.getProperty(result, "data.paginator.length").toString());
 
