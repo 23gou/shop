@@ -63,13 +63,27 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 		// 去阿里妈妈读取商品详情
 		try {
 			Map<String, Object> result = objectMapper
-					.readValue(content.replace("<HTML>", "").replace("</HTML>", "").replace("<HEAD>", "")
-							.replace("<BODY>", "").replace("</HEAD>", "").replace("</BODY>", "").replace("<html>", "")
-							.replace("</html>", "").replace("<head>", "").replace("<body>", "").replace("</head>", "")
-							.replace("</body>", "").replace("<html xmlns=\"http://www.w3.org/1999/xhtml\">", "")
-							.replace("<pre>", "").replace("</pre>", "").replace("</html>", ""), Map.class);
+					.readValue(
+							content.replace("<HTML>", "")
+									.replace("</HTML>", "")
+									.replace("<HEAD>", "")
+									.replace("<BODY>", "")
+									.replace("</HEAD>", "")
+									.replace("</BODY>", "")
+									.replace("<html>", "")
+									.replace("</html>", "")
+									.replace("<head>", "")
+									.replace("<body>", "")
+									.replace("</head>", "")
+									.replace("</body>", "")
+									.replace(
+											"<html xmlns=\"http://www.w3.org/1999/xhtml\">",
+											"").replace("<pre>", "")
+									.replace("</pre>", "")
+									.replace("</html>", ""), Map.class);
 			// 返回的结果
-			Integer length = Integer.valueOf(PropertyUtils.getProperty(result, "data.paginator.length").toString());
+			Integer length = Integer.valueOf(PropertyUtils.getProperty(result,
+					"data.paginator.length").toString());
 
 			if (length == 0) {
 				itemSourceModel.setProfit(BigDecimal.ZERO);
@@ -78,20 +92,23 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 				return false;
 			} else {
 				// 返回到额数据集
-				List<Map<String, Object>> pagelist = (List<Map<String, Object>>) PropertyUtils.getProperty(result,
-						"data.pagelist");
+				List<Map<String, Object>> pagelist = (List<Map<String, Object>>) PropertyUtils
+						.getProperty(result, "data.pagelist");
 				// 当前ID的那个
 				Map<String, Object> sourceInfo = pagelist.get(0);
 				// 进货价
-				BigDecimal zkPrice = new BigDecimal(sourceInfo.get("zkPrice").toString());
+				BigDecimal zkPrice = new BigDecimal(sourceInfo.get("zkPrice")
+						.toString());
 				// 佣金
-				BigDecimal calCommission = new BigDecimal(sourceInfo.get("calCommission").toString());
+				BigDecimal calCommission = new BigDecimal(sourceInfo.get(
+						"calCommission").toString());
 				itemSourceModel.setPurchasePrice(zkPrice);
 				itemSourceModel.setPurchaseDiscountPrice(calCommission);
 				itemSourceModel.setImg(sourceInfo.get("pictUrl").toString());
 				itemSourceModel.setType(SourceType.淘宝联盟);
 				itemSourceModel.setTitle(sourceInfo.get("title").toString());
-				itemSourceModel.setSourceOwner(sourceInfo.get("userNumberId").toString());
+				itemSourceModel.setSourceOwner(sourceInfo.get("userNumberId")
+						.toString());
 
 				return true;
 			}
@@ -111,7 +128,8 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 	 * @author liyixing 2015年8月26日 下午3:38:39
 	 */
 	@Override
-	public String syncItemSourceSku(List<ItemSourceModel> itemSourceModels, String sessionKey) {
+	public String syncItemSourceSku(List<ItemSourceModel> itemSourceModels,
+			String sessionKey) {
 		// 成功
 		int success = 0;
 		// 失败
@@ -120,14 +138,16 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 		for (ItemSourceModel itemSourceModel : itemSourceModels) {
 			try {
 				// 读取店铺本身的sku
-				List<Sku> skuOfMy = skuApi.getSkuProperties(Long.valueOf(itemSourceModel.getItemId()));
+				List<Sku> skuOfMy = skuApi.getSkuProperties(Long
+						.valueOf(itemSourceModel.getItemId()));
 				// SKU组合，按照属性排列，如aaa:bbb;ccc:ddd是一个SKU;
 				Map<String, Sku> skuByProperties = new HashMap<String, Sku>();
 				// 标题
 				// SKU组合，按照属性排列，如aaa:bbb;ccc:ddd是一个SKU;
 				Map<String, Sku> sourceSkuByProperties = new HashMap<String, Sku>();
 				// 读取淘宝客的sku
-				List<Sku> skuOfSource = skuApi.getSkuProperties(Long.valueOf(itemSourceModel.getSourceId()));
+				List<Sku> skuOfSource = skuApi.getSkuProperties(Long
+						.valueOf(itemSourceModel.getSourceId()));
 
 				for (Sku sku : skuOfMy) {
 					skuByProperties.put(sku.getProperties(), sku);
@@ -145,16 +165,19 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 
 						for (String p : ps) {
 							// 女装厚薄 常规款，淘宝助手对该属性无法导入
-							if (p.equals("-1:-1") || p.equals("-1:-2") || p.equals("-1:-3")) {
+							if (p.equals("-1:-1") || p.equals("-1:-2")
+									|| p.equals("-1:-3")) {
 								continue;
 							}
 							String[] z = p.split(":");
 
 							// pid
-							Map<String, String> mySkuId = mySku.getSkuPropsByTitle().get(z[0]);
+							Map<String, String> mySkuId = mySku
+									.getSkuPropsByTitle().get(z[0]);
 							// 8个汉字，16个字符
 							int titleLength = 0;
-							String title = skuOfAtb.getPropertiesTitleByMap().get(p);
+							String title = skuOfAtb.getPropertiesTitleByMap()
+									.get(p);
 
 							String newTitle = "";
 							// 超过的丢弃
@@ -263,11 +286,13 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 
 		for (ItemSourceModel itemSourceModel : itemSourceModels) {
 			if (StringUtils.isNotBlank(itemSourceModel.getItemId())) {
-				itemSourceModel.setMyTotalSoldQuantity(itemApi.getTotalSoldQuantity(itemSourceModel.getItemId()));
+				itemSourceModel.setMyTotalSoldQuantity(itemApi
+						.getTotalSoldQuantity(itemSourceModel.getItemId()));
 			}
 
 			if (StringUtils.isNotBlank(itemSourceModel.getSourceId())) {
-				itemSourceModel.setSourceTotalSoldQuantity(itemApi.getTotalSoldQuantity(itemSourceModel.getSourceId()));
+				itemSourceModel.setSourceTotalSoldQuantity(itemApi
+						.getTotalSoldQuantity(itemSourceModel.getSourceId()));
 			}
 			ItemSourceService.saveSource(itemSourceModel);
 		}
