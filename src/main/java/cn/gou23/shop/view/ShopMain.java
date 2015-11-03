@@ -162,8 +162,8 @@ public class ShopMain {
 			public void completed(ProgressEvent event) {
 				if (browser.getUrl().indexOf("login.taobao.com/member/login") >= 0) {
 					// 登陆，自动设置密码
-					browser.evaluate("document.getElementById('TPL_username_1').value='liyixing1'");
-					browser.evaluate("document.getElementById('TPL_password_1').value='maomaokajina0828'");
+					browser.evaluate("document.getElementById('TPL_username_1').value='rjwgshuai'");
+					browser.evaluate("document.getElementById('TPL_password_1').value='rjwtxdyshuai~!@#2'");
 				}
 			}
 
