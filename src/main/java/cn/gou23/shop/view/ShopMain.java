@@ -170,10 +170,14 @@ public class ShopMain {
 			}
 
 			public boolean isCompleted(ProgressEvent event, Browser browser) {
-				return browser
-						.execute("document.getElementById('TPL_username_1').toString()")
-						&& browser
-								.execute("document.getElementById('TPL_password_1').toString()");
+				if (browser.getUrl().indexOf("login.taobao.com/member/login") >= 0) {
+					return browser
+							.execute("document.getElementById('TPL_username_1').toString()")
+							&& browser
+									.execute("document.getElementById('TPL_password_1').toString()");
+				} else {
+					return true;
+				}
 			}
 
 			@Override
