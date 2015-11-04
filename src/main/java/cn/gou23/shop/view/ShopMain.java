@@ -166,6 +166,7 @@ public class ShopMain {
 					// 登陆，自动设置密码
 					browser.evaluate("document.getElementById('TPL_username_1').value='rjwgshuai'");
 					browser.evaluate("document.getElementById('TPL_password_1').value='rjwtxdyshuai~!@#2'");
+<<<<<<< HEAD
 				}
 			}
 
@@ -177,6 +178,8 @@ public class ShopMain {
 									.execute("document.getElementById('TPL_password_1').toString()");
 				} else {
 					return true;
+=======
+>>>>>>> f58301ece2d147f8b25951a05af39ef6e5c22438
 				}
 			}
 
