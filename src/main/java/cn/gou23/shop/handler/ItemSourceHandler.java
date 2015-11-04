@@ -1,5 +1,6 @@
-package cn.gou23.shop.parse;
+package cn.gou23.shop.handler;
 
+import java.util.Date;
 import java.util.List;
 
 import cn.gou23.shop.model.ItemSourceModel;
@@ -47,7 +48,7 @@ public interface ItemSourceHandler {
 	 * @author liyixing 2015年8月26日 下午3:38:39
 	 */
 	public void syncTotalSoldQuantity(List<ItemSourceModel> itemSourceModels);
-	
+
 	/**
 	 * 
 	 * 描述:读取最新的SKU数据
@@ -60,4 +61,43 @@ public interface ItemSourceHandler {
 	 */
 	public String syncItemSourceSku(List<ItemSourceModel> itemSourceModels,
 			String sessionKey);
+
+	/**
+	 * 
+	 * 描述:更新最后一次交易时间
+	 * 
+	 * @param itemSourceModel
+	 * @param content
+	 * @return
+	 * @author liyixing 2015年11月3日 下午4:41:37
+	 */
+	public Date syncLastTradingTime(ItemSourceModel itemSourceModel,
+			String content);
+
+	/**
+	 * 
+	 * 
+	 * 描述:任务完成事件
+	 *
+	 * @author liyixing
+	 * @version 1.0
+	 * @since 2015年11月3日 下午5:12:44
+	 */
+	public static interface Result {
+		/**
+		 * 
+		 * 描述:成功
+		 * 
+		 * @author liyixing 2015年11月3日 下午5:22:38
+		 */
+		public void doSuccess();
+
+		/**
+		 * 描述:失败
+		 * 
+		 * @param exception
+		 * @author liyixing 2015年11月3日 下午5:22:55
+		 */
+		public void error(Exception exception);
+	}
 }

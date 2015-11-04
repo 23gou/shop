@@ -1,7 +1,8 @@
-package cn.gou23.shop.parse.impl;
+package cn.gou23.shop.handler.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,17 +12,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import cn.gou23.cgodo.util.UtilLog;
 import cn.gou23.cgodo.util.UtilUrl;
 import cn.gou23.shop.constant.SourceType;
+import cn.gou23.shop.handler.ItemSourceHandler;
 import cn.gou23.shop.model.ItemSourceModel;
-import cn.gou23.shop.parse.ItemSourceHandler;
 import cn.gou23.shop.service.ItemSourceService;
 import cn.gou23.shop.taobaoapi.ItemApi;
 import cn.gou23.shop.taobaoapi.SkuApi;
 import cn.gou23.shop.taobaoapi.SkuApi.Sku;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * 
@@ -298,5 +299,11 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 		}
 
 		// return "成功" + success + "失败" + failure;
+	}
+
+	@Override
+	public Date syncLastTradingTime(ItemSourceModel itemSourceModel,
+			String content) {
+		return null;
 	}
 }

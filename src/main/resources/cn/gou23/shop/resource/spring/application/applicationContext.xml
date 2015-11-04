@@ -30,7 +30,7 @@
 	<aop:aspectj-autoproxy proxy-target-class="false" />
 	<!-- 扫描的包，spring将自动扫描这些包，根据其的注解配置，自动进行配置 -->
 	<context:component-scan
-		base-package="cn.gou23.shop.dao, cn.gou23.shop.service, cn.gou23.shop.parse, cn.gou23.shop.taobaoapi" />
+		base-package="cn.gou23.shop.dao, cn.gou23.shop.service, cn.gou23.shop.handler, cn.gou23.shop.taobaoapi" />
 	<!-- 注解驱动开启，对注解方式的事物进行支持 -->
 	<tx:annotation-driven mode="proxy"
 		transaction-manager="transactionManager" />

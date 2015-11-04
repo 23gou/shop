@@ -59,10 +59,10 @@ import cn.gou23.cgodo.util.UtilDateTime;
 import cn.gou23.cgodo.util.UtilLog;
 import cn.gou23.shop.constant.SaleStatus;
 import cn.gou23.shop.constant.SourceType;
+import cn.gou23.shop.handler.ItemSourceHandler;
 import cn.gou23.shop.model.ItemSourceModel;
 import cn.gou23.shop.model.ShopModel;
 import cn.gou23.shop.model.SourceOwnerModel;
-import cn.gou23.shop.parse.ItemSourceHandler;
 import cn.gou23.shop.service.ItemSourceService;
 import cn.gou23.shop.service.ShopService;
 import cn.gou23.shop.service.SourceOwnerService;
@@ -105,15 +105,19 @@ public class ShopMain {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		System.setProperty("org.eclipse.swt.browser.XULRunnerPath", System.getProperty("user.dir") + "/xulrunner");
+		System.setProperty("org.eclipse.swt.browser.XULRunnerPath",
+				System.getProperty("user.dir") + "/xulrunner");
 		try {
 			// 读取spring
 			UtilApplicationContext.load();
-			itemSourceHandler = UtilApplicationContext.get(ItemSourceHandler.class);
-			itemSourceService = UtilApplicationContext.get(ItemSourceService.class);
+			itemSourceHandler = UtilApplicationContext
+					.get(ItemSourceHandler.class);
+			itemSourceService = UtilApplicationContext
+					.get(ItemSourceService.class);
 			shopService = UtilApplicationContext.get(ShopService.class);
 			itemApi = UtilApplicationContext.get(ItemApi.class);
-			sourceOwnerService = UtilApplicationContext.get(SourceOwnerService.class);
+			sourceOwnerService = UtilApplicationContext
+					.get(SourceOwnerService.class);
 			taobaoClient = UtilApplicationContext.get(TaobaoClient.class);
 			ShopMain window = new ShopMain();
 			window.open();
@@ -152,14 +156,12 @@ public class ShopMain {
 		tabItem.setText("\u6D4F\u89C8\u5668");
 
 		browser = new Browser(tabFolder, SWT.NONE | SWT.MOZILLA);
-		browser.setUrl(
-				"https://login.taobao.com/member/login.jhtml?style=mini&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true&disableQuickLogin=true");
+		browser.setUrl("https://login.taobao.com/member/login.jhtml?style=mini&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true&disableQuickLogin=true");
 		tabItem.setControl(browser);
 
-		browser.addProgressListener(new ProgressListener() {
-
+		browser.addProgressListener(new MyProgressListener() {
 			@Override
-			public void completed(ProgressEvent event) {
+			public void realCompleted(ProgressEvent event, Browser browser) {
 				if (browser.getUrl().indexOf("login.taobao.com/member/login") >= 0) {
 					// 登陆，自动设置密码
 					browser.evaluate("document.getElementById('TPL_username_1').value='rjwgshuai'");
@@ -167,9 +169,15 @@ public class ShopMain {
 				}
 			}
 
+			public boolean isCompleted(ProgressEvent event, Browser browser) {
+				return browser
+						.execute("document.getElementById('TPL_username_1').toString()")
+						&& browser
+								.execute("document.getElementById('TPL_password_1').toString()");
+			}
+
 			@Override
 			public void changed(ProgressEvent event) {
-				// TODO Auto-generated method stub
 
 			}
 		});
@@ -220,7 +228,8 @@ public class ShopMain {
 				ItemSourceModel itemSourceModel = new ItemSourceModel();
 				itemSourceModel.setTitle(text_1.getText());
 				itemSourceModel.setItemId(text_1.getText().trim());
-				List<ItemSourceModel> itemSourceModels = itemSourceService.find(itemSourceModel);
+				List<ItemSourceModel> itemSourceModels = itemSourceService
+						.find(itemSourceModel);
 				reviewTable(itemSourceModels);
 			}
 		});
@@ -234,7 +243,8 @@ public class ShopMain {
 				ItemSourceModel itemSourceModel = new ItemSourceModel();
 
 				itemSourceModel.setSaleStatus(SaleStatus.创建);
-				List<ItemSourceModel> itemSourceModels = itemSourceService.find(itemSourceModel);
+				List<ItemSourceModel> itemSourceModels = itemSourceService
+						.find(itemSourceModel);
 
 				// 导出到文件
 				try {
@@ -265,10 +275,12 @@ public class ShopMain {
 						file.createNewFile();
 					}
 
-					BufferedWriter writer = new BufferedWriter(new FileWriter(file, false));
+					BufferedWriter writer = new BufferedWriter(new FileWriter(
+							file, false));
 
 					for (ItemSourceModel itemSourceModel2 : itemSourceModels) {
-						writer.write(itemSourceModel2.getSourceDetailUrl() + "\r\n");
+						writer.write(itemSourceModel2.getSourceDetailUrl()
+								+ "\r\n");
 					}
 
 					writer.close();
@@ -287,7 +299,8 @@ public class ShopMain {
 		button_4.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				List<ItemSourceModel> itemSourceModels = itemSourceService.findBlacklist();
+				List<ItemSourceModel> itemSourceModels = itemSourceService
+						.findBlacklist();
 				reviewTable(itemSourceModels);
 			}
 		});
@@ -298,7 +311,8 @@ public class ShopMain {
 		button_5.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				List<ItemSourceModel> itemSourceModels = itemSourceService.findSourceBlacklist();
+				List<ItemSourceModel> itemSourceModels = itemSourceService
+						.findSourceBlacklist();
 				reviewTable(itemSourceModels);
 			}
 		});
@@ -319,8 +333,10 @@ public class ShopMain {
 					SourceOwnerModel sourceOwnerModel = new SourceOwnerModel();
 
 					sourceOwnerModel.setType(itemSourceModel.getType());
-					sourceOwnerModel.setSourceOwner(itemSourceModel.getSourceOwner());
-					sourceOwnerModel = sourceOwnerService.getByOwnerAndType(sourceOwnerModel);
+					sourceOwnerModel.setSourceOwner(itemSourceModel
+							.getSourceOwner());
+					sourceOwnerModel = sourceOwnerService
+							.getByOwnerAndType(sourceOwnerModel);
 
 					if (sourceOwnerModel != null) {
 						text_3.setText(sourceOwnerModel.getRemark());
@@ -340,7 +356,9 @@ public class ShopMain {
 				try {
 					browser.setUrl("https://oauth.taobao.com/authorize?response_type=token&client_id="
 							// taobaoClient.getClass().getDeclaredField("appKey").get(obj)
-							+ (FieldUtils.getDeclaredField(DefaultTaobaoClient.class, "appKey", true)).get(taobaoClient)
+							+ (FieldUtils.getDeclaredField(
+									DefaultTaobaoClient.class, "appKey", true))
+									.get(taobaoClient)
 
 					);
 				} catch (Exception e1) {
@@ -359,7 +377,8 @@ public class ShopMain {
 				SourceOwnerModel sourceOwnerModel = new SourceOwnerModel();
 
 				sourceOwnerModel.setType(itemSourceModel.getType());
-				sourceOwnerModel.setSourceOwner(itemSourceModel.getSourceOwner());
+				sourceOwnerModel.setSourceOwner(itemSourceModel
+						.getSourceOwner());
 				sourceOwnerModel.setRemark(text_3.getText());
 				sourceOwnerService.save(sourceOwnerModel);
 			}
@@ -371,7 +390,8 @@ public class ShopMain {
 		lblNewLabel = new Label(shell, SWT.BORDER);
 		lblNewLabel.setBounds(10, 10, 404, 44);
 		errorMessage("\u9519\u8BEF\u6D88\u606F");
-		lblNewLabel.setForeground(lblNewLabel.getDisplay().getSystemColor(SWT.COLOR_RED));
+		lblNewLabel.setForeground(lblNewLabel.getDisplay().getSystemColor(
+				SWT.COLOR_RED));
 
 		combo = new Combo(shell, SWT.NONE);
 		combo.setBounds(729, 7, 88, 25);
@@ -391,8 +411,7 @@ public class ShopMain {
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				browser.setUrl(
-						"https://login.taobao.com/member/login.jhtml?style=mini&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true&disableQuickLogin=true");
+				browser.setUrl("https://login.taobao.com/member/login.jhtml?style=mini&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true&disableQuickLogin=true");
 				tabFolder.setSelection(tabItem);
 			}
 		});
@@ -417,14 +436,17 @@ public class ShopMain {
 
 				// 货源ID和店铺ID解析
 				newItemSourceModel.setSourceId(sourceId);
-				newItemSourceModel.setShopId(shopModelByName.get(combo.getText()).getId());
+				newItemSourceModel.setShopId(shopModelByName.get(
+						combo.getText()).getId());
 				newItemSourceModel.setSourceDetailUrl(url);
 				newItemSourceModel.setType(SourceType.淘宝联盟);
 
-				ItemSourceModel itemSourceModel = itemSourceService.getBySourceIdAndShopId(newItemSourceModel);
+				ItemSourceModel itemSourceModel = itemSourceService
+						.getBySourceIdAndShopId(newItemSourceModel);
 
 				if (itemSourceModel != null) {
-					BeanUtils.copyProperties(itemSourceModel, newItemSourceModel);
+					BeanUtils.copyProperties(itemSourceModel,
+							newItemSourceModel);
 					errorMessage("货源已经添加过");
 
 					return;
@@ -434,7 +456,8 @@ public class ShopMain {
 				ProgressAdapter addSourceListener = new ProgressAdapter() {
 					public void completed(ProgressEvent event) {
 						try {
-							itemSourceHandler.parseInfo(newItemSourceModel, browser.getText());
+							itemSourceHandler.parseInfo(newItemSourceModel,
+									browser.getText());
 						} catch (Exception e) {
 							errorMessage("淘宝解析失败，是否已经登录淘宝客？");
 							tabFolder.setSelection(tabItem);
@@ -444,7 +467,8 @@ public class ShopMain {
 						}
 
 						// 默认定价
-						newItemSourceModel.setPrice(newItemSourceModel.countDefaultPrice());
+						newItemSourceModel.setPrice(newItemSourceModel
+								.countDefaultPrice());
 						// 保存
 						itemSourceService.add(newItemSourceModel);
 						showItemSource(newItemSourceModel);
@@ -455,10 +479,9 @@ public class ShopMain {
 
 				// 读取淘客信息
 				try {
-					browser.setUrl(
-							"http://pub.alimama.com/pubauc/searchAuctionList.json?spm=a219t.7473494.1998155389.3.7ywcjG&q="
-									+ URLEncoder.encode(url, "utf-8")
-									+ "&toPage=1&perPagesize=40&t=1439885919272&_tb_token_=xDd4yfa9Mho&_input_charset=utf-8");
+					browser.setUrl("http://pub.alimama.com/pubauc/searchAuctionList.json?spm=a219t.7473494.1998155389.3.7ywcjG&q="
+							+ URLEncoder.encode(url, "utf-8")
+							+ "&toPage=1&perPagesize=40&t=1439885919272&_tb_token_=xDd4yfa9Mho&_input_charset=utf-8");
 				} catch (UnsupportedEncodingException e1) {
 					throw new RuntimeException(e1);
 				}
@@ -509,11 +532,13 @@ public class ShopMain {
 		tblclmnStatus.setWidth(80);
 		tblclmnStatus.setText("状态");
 
-		TableColumn tblclmnSourceTotalSoldQuantity = new TableColumn(table, SWT.NONE);
+		TableColumn tblclmnSourceTotalSoldQuantity = new TableColumn(table,
+				SWT.NONE);
 		tblclmnSourceTotalSoldQuantity.setWidth(100);
 		tblclmnSourceTotalSoldQuantity.setText("货源销量");
 
-		TableColumn tblclmnMyTotalSoldQuantity = new TableColumn(table, SWT.NONE);
+		TableColumn tblclmnMyTotalSoldQuantity = new TableColumn(table,
+				SWT.NONE);
 		tblclmnMyTotalSoldQuantity.setWidth(100);
 		tblclmnMyTotalSoldQuantity.setText("本地销量");
 
@@ -587,9 +612,12 @@ public class ShopMain {
 				// event.detail &= ~SWT.SELECTED;
 
 				if (table.getSelectionIndex() >= 0) {
-					text.setText(table.getItem(table.getSelectionIndex()).getText(table.getColumnCount() - 2));
-					text_1.setText(table.getItem(table.getSelectionIndex()).getText(1));
-					text_2.setText(table.getItem(table.getSelectionIndex()).getText(2));
+					text.setText(table.getItem(table.getSelectionIndex())
+							.getText(table.getColumnCount() - 2));
+					text_1.setText(table.getItem(table.getSelectionIndex())
+							.getText(1));
+					text_2.setText(table.getItem(table.getSelectionIndex())
+							.getText(2));
 				}
 
 			}
@@ -643,20 +671,24 @@ public class ShopMain {
 		TableItem item = new TableItem(table, SWT.NONE);
 
 		try {
-			Image image = new Image(null, UtilImage.resizeImage(itemSourceModel.getImg(), 80, 80));
+			Image image = new Image(null, UtilImage.resizeImage(
+					itemSourceModel.getImg(), 80, 80));
 			item.setImage(0, image);
 			item.setText(1, itemSourceModel.getTitle());
 			item.setText(2, itemSourceModel.getPrice().toString());
 			item.setText(3, itemSourceModel.getPurchasePrice().toString());
-			item.setText(4, itemSourceModel.getPurchaseDiscountPrice().toString());
+			item.setText(4, itemSourceModel.getPurchaseDiscountPrice()
+					.toString());
 			item.setText(5, itemSourceModel.getProfit().toString());
 			item.setText(6, itemSourceModel.countDefaultPrice().toString());
 			item.setText(7, itemSourceModel.getSaleStatus().toString());
 
-			item.setText(8, itemSourceModel.getSourceTotalSoldQuantity().toString());
+			item.setText(8, itemSourceModel.getSourceTotalSoldQuantity()
+					.toString());
 			item.setText(9, itemSourceModel.getMyTotalSoldQuantity().toString());
 
-			item.setText(table.getColumnCount() - 2, itemSourceModel.getSourceDetailUrl().toString());
+			item.setText(table.getColumnCount() - 2, itemSourceModel
+					.getSourceDetailUrl().toString());
 			// ID列只能放在最后一列
 			item.setText(table.getColumnCount() - 1, itemSourceModel.getId());
 
@@ -709,7 +741,8 @@ public class ShopMain {
 			public void handleEvent(Event event) {
 				if (table.getSelectionIndex() >= 0) {
 					ItemSourceModel itemSourceModel = itemSourceService
-							.get(table.getItem(table.getSelectionIndex()).getText(table.getColumnCount() - 1));
+							.get(table.getItem(table.getSelectionIndex())
+									.getText(table.getColumnCount() - 1));
 					itemSourceService.addSourceBlacklist(itemSourceModel);
 				}
 			}
@@ -741,7 +774,8 @@ public class ShopMain {
 									.getByTaobaoAuction(browser.getText());
 
 							// /淘宝店铺更新过来的数据，存入总的list中
-							itemSourceModelsOfShopAll.addAll(itemSourceModelsOfShop);
+							itemSourceModelsOfShopAll
+									.addAll(itemSourceModelsOfShop);
 
 							if (page.next()) {
 								browser.setUrl("https://sell.taobao.com/auction/merchandise/auction_list.htm?page="
@@ -753,7 +787,8 @@ public class ShopMain {
 								relationShop(SaleStatus.创建);
 							}
 						} catch (Exception e) {
-							errorMessage("淘宝出售中数据解析失败，是否已经登录淘宝客？\r\n" + e.getMessage());
+							errorMessage("淘宝出售中数据解析失败，是否已经登录淘宝客？\r\n"
+									+ e.getMessage());
 							tabFolder.setSelection(tabItem);
 							PageContext.clear();
 							browser.removeProgressListener(this);
@@ -763,7 +798,8 @@ public class ShopMain {
 				};
 
 				browser.addProgressListener(taobaoAuctionListener);
-				browser.setUrl("https://sell.taobao.com/auction/merchandise/auction_list.htm?page=" + page.getPageNo());
+				browser.setUrl("https://sell.taobao.com/auction/merchandise/auction_list.htm?page="
+						+ page.getPageNo());
 			}
 		});
 
@@ -786,7 +822,8 @@ public class ShopMain {
 									.getByTaobaoAuction(browser.getText());
 
 							// /淘宝店铺更新过来的数据，存入总的list中
-							itemSourceModelsOfShopAll.addAll(itemSourceModelsOfShop);
+							itemSourceModelsOfShopAll
+									.addAll(itemSourceModelsOfShop);
 
 							if (page.next()) {
 								browser.setUrl("https://sell.taobao.com/auction/merchandise/auction_list.htm?page="
@@ -798,7 +835,8 @@ public class ShopMain {
 								relationShop();
 							}
 						} catch (Exception e) {
-							errorMessage("淘宝出售中数据解析失败，是否已经登录淘宝客？\r\n" + e.getMessage());
+							errorMessage("淘宝出售中数据解析失败，是否已经登录淘宝客？\r\n"
+									+ e.getMessage());
 							tabFolder.setSelection(tabItem);
 							PageContext.clear();
 							browser.removeProgressListener(this);
@@ -808,7 +846,8 @@ public class ShopMain {
 				};
 
 				browser.addProgressListener(taobaoAuctionListener);
-				browser.setUrl("https://sell.taobao.com/auction/merchandise/auction_list.htm?page=" + page.getPageNo());
+				browser.setUrl("https://sell.taobao.com/auction/merchandise/auction_list.htm?page="
+						+ page.getPageNo());
 			}
 		});
 
@@ -823,7 +862,8 @@ public class ShopMain {
 
 					if (table.getSelectionIndex() >= 0) {
 						ItemSourceModel itemSourceModel = itemSourceService
-								.get(table.getItem(table.getSelectionIndex()).getText(table.getColumnCount() - 1));
+								.get(table.getItem(table.getSelectionIndex())
+										.getText(table.getColumnCount() - 1));
 						itemSourceModels = new ArrayList<ItemSourceModel>();
 						itemSourceModels.add(itemSourceModel);
 					} else {
@@ -832,53 +872,79 @@ public class ShopMain {
 						itemSourceModel.setShopId(getShop().getId());
 						itemSourceModel.setType(SourceType.淘宝联盟);
 
-						itemSourceModels = itemSourceService.getOn(itemSourceModel);
+						itemSourceModels = itemSourceService
+								.getOn(itemSourceModel);
 					}
 
 					if (itemSourceModels.size() < 1) {
 						errorMessage("没有需要更新的商品！");
 						return;
 					}
-					final Iterator<ItemSourceModel> iterator = itemSourceModels.iterator();
+					final Iterator<ItemSourceModel> iterator = itemSourceModels
+							.iterator();
 
 					// 循环更新每个商品
 					// 点击添加货源时，处理淘宝客的信息
 					ProgressAdapter addSourceListener = new ProgressAdapter() {
 						public void completed(ProgressEvent event) {
 							try {
-								if (!itemSourceHandler.parseInfo(currentItemSourceModel, browser.getText())) {
+								if (!itemSourceHandler.parseInfo(
+										currentItemSourceModel,
+										browser.getText())) {
 									// 淘宝客无效，下架
-									itemApi.delisting(Long.valueOf(currentItemSourceModel.getItemId()),
-											getShop().getSessionKey());
-									currentItemSourceModel.setSaleStatus(SaleStatus.下架);
-									itemSourceService.saveSource(currentItemSourceModel);
+									itemApi.delisting(Long
+											.valueOf(currentItemSourceModel
+													.getItemId()), getShop()
+											.getSessionKey());
+									currentItemSourceModel
+											.setSaleStatus(SaleStatus.下架);
+									itemSourceService
+											.saveSource(currentItemSourceModel);
 								} else {
 									// 检查是否需要下架
 									if (currentItemSourceModel.needOff()) {
 										// 淘宝客无效，下架
 										try {
-											itemApi.delisting(Long.valueOf(currentItemSourceModel.getItemId()),
+											itemApi.delisting(
+													Long.valueOf(currentItemSourceModel
+															.getItemId()),
 													getShop().getSessionKey());
 										} catch (Exception e) {
-											UtilLog.warn("商品{}，{}自动下架失败，请手动下架", e, currentItemSourceModel.getItemId(),
-													currentItemSourceModel.getTitle());
+											UtilLog.warn("商品{}，{}自动下架失败，请手动下架",
+													e, currentItemSourceModel
+															.getItemId(),
+													currentItemSourceModel
+															.getTitle());
 										}
-										currentItemSourceModel.setSaleStatus(SaleStatus.下架);
-										itemSourceService.saveSource(currentItemSourceModel);
+										currentItemSourceModel
+												.setSaleStatus(SaleStatus.下架);
+										itemSourceService
+												.saveSource(currentItemSourceModel);
 									} else {
 										// 不需要下架，自动修改标题
-										itemSourceService.saveSource(currentItemSourceModel);
-										if (StringUtils.isNotBlank(currentItemSourceModel.getItemId())) {
-											UtilLog.debug("宝贝：{}，已经关联店铺信息，需要自动同步标题", currentItemSourceModel.getTitle());
+										itemSourceService
+												.saveSource(currentItemSourceModel);
+										if (StringUtils
+												.isNotBlank(currentItemSourceModel
+														.getItemId())) {
+											UtilLog.debug(
+													"宝贝：{}，已经关联店铺信息，需要自动同步标题",
+													currentItemSourceModel
+															.getTitle());
 											// 更新标题
-											itemApi.updateTitle(Long.valueOf(currentItemSourceModel.getItemId()),
-													currentItemSourceModel.getTitle(), getShop().getSessionKey());
+											itemApi.updateTitle(
+													Long.valueOf(currentItemSourceModel
+															.getItemId()),
+													currentItemSourceModel
+															.getTitle(),
+													getShop().getSessionKey());
 										}
 
 									}
 								}
 							} catch (Exception e) {
-								errorMessage("淘宝解析失败，是否已经登录淘宝客？\r\n" + e.getMessage());
+								errorMessage("淘宝解析失败，是否已经登录淘宝客？\r\n"
+										+ e.getMessage());
 								tabFolder.setSelection(tabItem);
 								browser.removeProgressListener(this);
 								return;
@@ -888,11 +954,12 @@ public class ShopMain {
 							if (iterator.hasNext()) {
 								currentItemSourceModel = iterator.next();
 								try {
-									browser.setUrl(
-											"http://pub.alimama.com/pubauc/searchAuctionList.json?spm=a219t.7473494.1998155389.3.7ywcjG&q="
-													+ URLEncoder.encode(currentItemSourceModel.getSourceDetailUrl(),
-															"utf-8")
-													+ "&toPage=1&perPagesize=40&t=1439885919272&_tb_token_=xDd4yfa9Mho&_input_charset=utf-8");
+									browser.setUrl("http://pub.alimama.com/pubauc/searchAuctionList.json?spm=a219t.7473494.1998155389.3.7ywcjG&q="
+											+ URLEncoder.encode(
+													currentItemSourceModel
+															.getSourceDetailUrl(),
+													"utf-8")
+											+ "&toPage=1&perPagesize=40&t=1439885919272&_tb_token_=xDd4yfa9Mho&_input_charset=utf-8");
 								} catch (UnsupportedEncodingException e) {
 									throw new RuntimeException(e);
 								}
@@ -906,10 +973,11 @@ public class ShopMain {
 					browser.addProgressListener(addSourceListener);
 					currentItemSourceModel = iterator.next();
 					// 读取淘客信息
-					browser.setUrl(
-							"http://pub.alimama.com/pubauc/searchAuctionList.json?spm=a219t.7473494.1998155389.3.7ywcjG&q="
-									+ URLEncoder.encode(currentItemSourceModel.getSourceDetailUrl(), "utf-8")
-									+ "&toPage=1&perPagesize=40&t=1439885919272&_tb_token_=xDd4yfa9Mho&_input_charset=utf-8");
+					browser.setUrl("http://pub.alimama.com/pubauc/searchAuctionList.json?spm=a219t.7473494.1998155389.3.7ywcjG&q="
+							+ URLEncoder.encode(
+									currentItemSourceModel.getSourceDetailUrl(),
+									"utf-8")
+							+ "&toPage=1&perPagesize=40&t=1439885919272&_tb_token_=xDd4yfa9Mho&_input_charset=utf-8");
 				} catch (UnsupportedEncodingException e1) {
 					throw new RuntimeException(e1);
 				}
@@ -925,13 +993,16 @@ public class ShopMain {
 
 				if (table.getSelectionIndex() >= 0) {
 					ItemSourceModel itemSourceModel = itemSourceService
-							.get(table.getItem(table.getSelectionIndex()).getText(table.getColumnCount() - 1));
+							.get(table.getItem(table.getSelectionIndex())
+									.getText(table.getColumnCount() - 1));
 					itemSourceModels = new ArrayList<ItemSourceModel>();
 					itemSourceModels.add(itemSourceModel);
 
-					errorMessage(itemSourceHandler.syncItemSourceSku(itemSourceModels, getShop().getSessionKey()));
+					errorMessage(itemSourceHandler.syncItemSourceSku(
+							itemSourceModels, getShop().getSessionKey()));
 				} else {
-					errorMessage(itemSourceHandler.syncItemSourceSku(itemSourceService.find(new ItemSourceModel()),
+					errorMessage(itemSourceHandler.syncItemSourceSku(
+							itemSourceService.find(new ItemSourceModel()),
 							getShop().getSessionKey()));
 				}
 			}
@@ -946,14 +1017,16 @@ public class ShopMain {
 
 				if (table.getSelectionIndex() >= 0) {
 					ItemSourceModel itemSourceModel = itemSourceService
-							.get(table.getItem(table.getSelectionIndex()).getText(table.getColumnCount() - 1));
+							.get(table.getItem(table.getSelectionIndex())
+									.getText(table.getColumnCount() - 1));
 					itemSourceModels = new ArrayList<ItemSourceModel>();
 					itemSourceModels.add(itemSourceModel);
 
 					itemSourceHandler.syncTotalSoldQuantity(itemSourceModels);
 					errorMessage("同步销量成功！");
 				} else {
-					itemSourceHandler.syncTotalSoldQuantity(itemSourceService.find(new ItemSourceModel()));
+					itemSourceHandler.syncTotalSoldQuantity(itemSourceService
+							.find(new ItemSourceModel()));
 					errorMessage("同步销量成功！");
 				}
 			}
@@ -968,8 +1041,9 @@ public class ShopMain {
 	 * @author liyixing 2015年8月18日 下午11:21:11
 	 */
 	private void errorMessage(String text) {
-		lblNewLabel
-				.setText("【" + UtilDateTime.format(new Date(), UtilDateTime.YYYY_MM_DD_HH_MM_SS) + "】：【" + text + "】");
+		lblNewLabel.setText("【"
+				+ UtilDateTime.format(new Date(),
+						UtilDateTime.YYYY_MM_DD_HH_MM_SS) + "】：【" + text + "】");
 	}
 
 	/**
@@ -980,7 +1054,8 @@ public class ShopMain {
 	 * @throws NoSuchMethodException
 	 * @author liyixing 2015年8月26日 下午1:55:48
 	 */
-	private void relationShop() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	private void relationShop() throws IllegalAccessException,
+			InvocationTargetException, NoSuchMethodException {
 		relationShop(null);
 	}
 
@@ -993,30 +1068,36 @@ public class ShopMain {
 	 * @author liyixing 2015年8月26日 下午1:55:48
 	 */
 	private void relationShop(SaleStatus saleStatus)
-			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+			throws IllegalAccessException, InvocationTargetException,
+			NoSuchMethodException {
 		List<ItemSourceModel> notOffItemSourceModels;
 
 		if (table.getSelectionIndex() >= 0) {
-			ItemSourceModel itemSourceModel = itemSourceService
-					.get(table.getItem(table.getSelectionIndex()).getText(table.getColumnCount() - 1));
+			ItemSourceModel itemSourceModel = itemSourceService.get(table
+					.getItem(table.getSelectionIndex()).getText(
+							table.getColumnCount() - 1));
 			notOffItemSourceModels = new ArrayList<ItemSourceModel>();
 			notOffItemSourceModels.add(itemSourceModel);
 		} else {
 			// 自动关联ID
 			// 查询所有ID没有被关联的
 			ItemSourceModel itemSourceModel = new ItemSourceModel();
-			itemSourceModel.setShopId(shopModelByName.get(combo.getText()).getId());
+			itemSourceModel.setShopId(shopModelByName.get(combo.getText())
+					.getId());
 			itemSourceModel.setType(SourceType.淘宝联盟);
 			itemSourceModel.setSaleStatus(saleStatus);
 			// 标题
-			notOffItemSourceModels = itemSourceService.getNotOff(itemSourceModel);
+			notOffItemSourceModels = itemSourceService
+					.getNotOff(itemSourceModel);
 
-			List<String> titles = UtilBean.beansFieldTolist(notOffItemSourceModels, "title");
+			List<String> titles = UtilBean.beansFieldTolist(
+					notOffItemSourceModels, "title");
 
 			// 检查不存在的
 			for (ItemSourceModel itemSourceModelOfShop : itemSourceModelsOfShopAll) {
 				if (!titles.contains(itemSourceModelOfShop.getTitle())) {
-					UtilLog.debug("商品名称：{}，在货源中不存在", itemSourceModelOfShop.getTitle());
+					UtilLog.debug("商品名称：{}，在货源中不存在",
+							itemSourceModelOfShop.getTitle());
 				}
 			}
 		}
@@ -1037,7 +1118,8 @@ public class ShopMain {
 					itemSourceService.saveSource(itemSourceModelNotOff);
 				} else {
 					// 更新价格
-					itemSourceModelNotOff.setPrice(itemSourceModelOfShop.getPrice());
+					itemSourceModelNotOff.setPrice(itemSourceModelOfShop
+							.getPrice());
 					itemSourceService.saveSource(itemSourceModelNotOff);
 				}
 			} else {
@@ -1052,8 +1134,10 @@ public class ShopMain {
 					continue;
 				}
 
-				itemSourceModelNotOff.setPrice(itemSourceModelOfShop.getPrice());
-				itemSourceModelNotOff.setItemId(itemSourceModelOfShop.getItemId());
+				itemSourceModelNotOff
+						.setPrice(itemSourceModelOfShop.getPrice());
+				itemSourceModelNotOff.setItemId(itemSourceModelOfShop
+						.getItemId());
 				itemSourceModelNotOff.setSaleStatus(SaleStatus.上架);
 				itemSourceService.saveSource(itemSourceModelNotOff);
 			}
@@ -1081,7 +1165,9 @@ public class ShopMain {
 	 */
 	private ItemSourceModel getSelect() {
 		if (table.getSelectionIndex() >= 0) {
-			return itemSourceService.get(table.getItem(table.getSelectionIndex()).getText(table.getColumnCount() - 1));
+			return itemSourceService.get(table.getItem(
+					table.getSelectionIndex()).getText(
+					table.getColumnCount() - 1));
 		} else {
 			return null;
 		}
