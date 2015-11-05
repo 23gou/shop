@@ -98,6 +98,6 @@ public interface ItemSourceHandler {
 		 * @param exception
 		 * @author liyixing 2015年11月3日 下午5:22:55
 		 */
-		public void error(Exception exception);
+		public void doError(Exception exception);
 	}
 }
