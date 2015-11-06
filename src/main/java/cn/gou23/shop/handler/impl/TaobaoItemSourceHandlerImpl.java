@@ -27,6 +27,7 @@ import cn.gou23.shop.service.ItemSourceService;
 import cn.gou23.shop.taobaoapi.ItemApi;
 import cn.gou23.shop.taobaoapi.SkuApi;
 import cn.gou23.shop.taobaoapi.SkuApi.Sku;
+import cn.gou23.shop.util.UtilBrowser;
 import cn.gou23.shop.view.MyProgressListener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -326,17 +327,41 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 
 			@Override
 			public void realCompleted(ProgressEvent event, Browser browser) {
+
 			}
 
 			public boolean isCompleted(ProgressEvent event, Browser browser) {
-				String js = "var html = null; KISSY.use('node', function (S, Node) {html = Node.all('.date')[0].innerHTML});html.toString()";
-				boolean o = browser.execute(js);
-
-				return o;
+				return true;
 			}
 		};
-		browser.addProgressListener(progressListener);
-		browser.setUrl("https://detail.tmall.com/item.htm?id=521062210047&spm=a1z10.4-b.w5003-12643227594.3.11Ep8L&scene=taobao_shop");
 		return;
+	}
+
+	/**
+	 * 
+	 * 描述:进入天猫的交易记录
+	 * 
+	 * @param browser
+	 * @author liyixing 2015年11月6日 下午5:16:32
+	 */
+	private void toTmallDealRecords(final ItemSourceModel itemSourceModel,
+			final Browser browser, final ProgressListener progressListener) {
+		browser.addProgressListener(new ProgressListener() {
+			@Override
+			public void completed(ProgressEvent event) {
+				// 跳转
+				browser.removeProgressListener(this);
+				browser.addProgressListener(progressListener);
+				UtilBrowser
+						.toUrl(browser,
+								"https://ext-mdskip.taobao.com/extension/dealRecords.htm?_ksTS=1446801034284_697&callback=jsonp698&bid_page=1&page_size=15&is_start=false&item_type=b&ends=1447063242000&starts=1446458442000&item_id="
+										+ itemSourceModel.getSourceId()
+										+ "&user_tag=34672672&old_quantity=1992&seller_num_id=2380530097&isFromDetail=yes&totalSQ=465&sbn=6f080c9f68f5d3e88487ba5630ae79e3&sold_total_num=23&&isg=41524F0CD11E174FE3936D056E02BD4F&isg2=Aq-vcWfLRkAwSXcasWztcnvKv825wQN2");
+			}
+
+			@Override
+			public void changed(ProgressEvent event) {
+			}
+		});
 	}
 }
