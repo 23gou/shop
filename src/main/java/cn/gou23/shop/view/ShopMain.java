@@ -60,6 +60,7 @@ import cn.gou23.cgodo.util.UtilLog;
 import cn.gou23.shop.constant.SaleStatus;
 import cn.gou23.shop.constant.SourceType;
 import cn.gou23.shop.handler.ItemSourceHandler;
+import cn.gou23.shop.handler.ItemSourceHandler.ProcessHandler;
 import cn.gou23.shop.model.ItemSourceModel;
 import cn.gou23.shop.model.ShopModel;
 import cn.gou23.shop.model.SourceOwnerModel;
@@ -1032,6 +1033,51 @@ public class ShopMain {
 					itemSourceHandler.syncTotalSoldQuantity(itemSourceService
 							.find(new ItemSourceModel()));
 					errorMessage("同步销量成功！");
+				}
+			}
+		});
+
+		// 更新淘宝最后交易日
+		MenuItem itemAiTaobaoLastNoticeDay = new MenuItem(menu, SWT.PUSH);
+		itemAiTaobaoLastNoticeDay.setText("更新淘宝最后交易日");
+		itemAiTaobaoLastNoticeDay.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				List<ItemSourceModel> itemSourceModels;
+
+				if (table.getSelectionIndex() >= 0) {
+					ItemSourceModel itemSourceModel = itemSourceService
+							.get(table.getItem(table.getSelectionIndex())
+									.getText(table.getColumnCount() - 1));
+					itemSourceModels = new ArrayList<ItemSourceModel>();
+					itemSourceModels.add(itemSourceModel);
+
+					itemSourceHandler.syncLastNoticeDay(itemSourceModels,
+							browser, new ProcessHandler() {
+
+								@Override
+								public void doSuccess() {
+									errorMessage("同步淘宝最后交易日成功！");
+								}
+
+								@Override
+								public void doError(Exception exception) {
+								}
+							});
+
+				} else {
+					itemSourceHandler.syncLastNoticeDay(
+							itemSourceService.find(new ItemSourceModel()),
+							browser, new ProcessHandler() {
+
+								@Override
+								public void doSuccess() {
+									errorMessage("同步淘宝最后交易日成功！");
+								}
+
+								@Override
+								public void doError(Exception exception) {
+								}
+							});
 				}
 			}
 		});

@@ -1,6 +1,7 @@
 package cn.gou23.shop.model;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import cn.gou23.cgodo.util.UtilLog;
 import cn.gou23.shop.entity.ItemSourceEntity;
@@ -112,5 +113,14 @@ public class ItemSourceModel extends ItemSourceEntity {
      */
     public Long getSourceTotalSoldQuantity() {
         return super.getSourceTotalSoldQuantity() == null ? 0l : super.getSourceTotalSoldQuantity();
+    }
+    
+    /**
+     * 最后交易日
+     *
+     * @mbggenerated do_not_delete_during_merge
+     */
+    public Date getLastNoticeDay() {
+        return super.getLastNoticeDay() == null ? new Date() : super.getLastNoticeDay();
     }
 }

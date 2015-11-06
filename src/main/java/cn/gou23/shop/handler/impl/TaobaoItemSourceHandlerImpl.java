@@ -4,23 +4,30 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.ProgressEvent;
+import org.eclipse.swt.browser.ProgressListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import cn.gou23.cgodo.util.UtilLog;
 import cn.gou23.cgodo.util.UtilUrl;
 import cn.gou23.shop.constant.SourceType;
 import cn.gou23.shop.handler.ItemSourceHandler;
+import cn.gou23.shop.handler.ItemSourceHandler.ProcessHandler;
 import cn.gou23.shop.model.ItemSourceModel;
 import cn.gou23.shop.service.ItemSourceService;
 import cn.gou23.shop.taobaoapi.ItemApi;
 import cn.gou23.shop.taobaoapi.SkuApi;
 import cn.gou23.shop.taobaoapi.SkuApi.Sku;
+import cn.gou23.shop.view.MyProgressListener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -302,8 +309,34 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 	}
 
 	@Override
-	public Date syncLastTradingTime(ItemSourceModel itemSourceModel,
-			String content) {
-		return null;
+	public void syncLastNoticeDay(List<ItemSourceModel> itemSourceModels,
+			Browser browser, ProcessHandler processHandler) {
+		UtilLog.debug("需要更新最后交易日的商品数是：{}", itemSourceModels.size());
+
+		if (CollectionUtils.isEmpty(itemSourceModels)) {
+			return;
+		}
+
+		Iterator<ItemSourceModel> itemSourceModelsIterator = itemSourceModels
+				.iterator();
+		ProgressListener progressListener = new MyProgressListener() {
+			@Override
+			public void changed(ProgressEvent event) {
+			}
+
+			@Override
+			public void realCompleted(ProgressEvent event, Browser browser) {
+			}
+
+			public boolean isCompleted(ProgressEvent event, Browser browser) {
+				String js = "var html = null; KISSY.use('node', function (S, Node) {html = Node.all('.date')[0].innerHTML});html.toString()";
+				boolean o = browser.execute(js);
+
+				return o;
+			}
+		};
+		browser.addProgressListener(progressListener);
+		browser.setUrl("https://detail.tmall.com/item.htm?id=521062210047&spm=a1z10.4-b.w5003-12643227594.3.11Ep8L&scene=taobao_shop");
+		return;
 	}
 }

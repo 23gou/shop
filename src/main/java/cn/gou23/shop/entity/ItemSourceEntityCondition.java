@@ -169,6 +169,7 @@ public class ItemSourceEntityCondition {
      * <li>sourceOwner 货源所属人</li>
      * <li>myTotalSoldQuantity 本店铺销量</li>
      * <li>sourceTotalSoldQuantity 货源销量</li>
+     * <li>lastNoticeDay 最后交易日</li>
      * </ul>
      *
      * @mbggenerated
@@ -1334,6 +1335,66 @@ public class ItemSourceEntityCondition {
             return (Criteria) this;
         }
 
+        public Criteria andLastNoticeDayIsNull() {
+            addCriterion("LAST_NOTICE_DAY is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastNoticeDayIsNotNull() {
+            addCriterion("LAST_NOTICE_DAY is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastNoticeDayEqualTo(Date value) {
+            addCriterion("LAST_NOTICE_DAY =", value, "lastNoticeDay");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastNoticeDayNotEqualTo(Date value) {
+            addCriterion("LAST_NOTICE_DAY <>", value, "lastNoticeDay");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastNoticeDayGreaterThan(Date value) {
+            addCriterion("LAST_NOTICE_DAY >", value, "lastNoticeDay");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastNoticeDayGreaterThanOrEqualTo(Date value) {
+            addCriterion("LAST_NOTICE_DAY >=", value, "lastNoticeDay");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastNoticeDayLessThan(Date value) {
+            addCriterion("LAST_NOTICE_DAY <", value, "lastNoticeDay");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastNoticeDayLessThanOrEqualTo(Date value) {
+            addCriterion("LAST_NOTICE_DAY <=", value, "lastNoticeDay");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastNoticeDayIn(List<Date> values) {
+            addCriterion("LAST_NOTICE_DAY in", values, "lastNoticeDay");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastNoticeDayNotIn(List<Date> values) {
+            addCriterion("LAST_NOTICE_DAY not in", values, "lastNoticeDay");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastNoticeDayBetween(Date value1, Date value2) {
+            addCriterion("LAST_NOTICE_DAY between", value1, value2, "lastNoticeDay");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastNoticeDayNotBetween(Date value1, Date value2) {
+            addCriterion("LAST_NOTICE_DAY not between", value1, value2, "lastNoticeDay");
+            return (Criteria) this;
+        }
+
         public Criteria andIdLikeInsensitive(String value) {
             addCriterion("upper(ID) like", value.toUpperCase(), "id");
             return (Criteria) this;
@@ -1393,6 +1454,7 @@ public class ItemSourceEntityCondition {
      * <li>sourceOwner 货源所属人</li>
      * <li>myTotalSoldQuantity 本店铺销量</li>
      * <li>sourceTotalSoldQuantity 货源销量</li>
+     * <li>lastNoticeDay 最后交易日</li>
      * </ul>
      *
      * @mbggenerated do_not_delete_during_merge
@@ -1422,6 +1484,7 @@ public class ItemSourceEntityCondition {
      * <li>sourceOwner 货源所属人</li>
      * <li>myTotalSoldQuantity 本店铺销量</li>
      * <li>sourceTotalSoldQuantity 货源销量</li>
+     * <li>lastNoticeDay 最后交易日</li>
      * </ul>
      *
      * @mbggenerated

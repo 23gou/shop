@@ -3,6 +3,8 @@ package cn.gou23.shop.handler;
 import java.util.Date;
 import java.util.List;
 
+import org.eclipse.swt.browser.Browser;
+
 import cn.gou23.shop.model.ItemSourceModel;
 
 /**
@@ -71,8 +73,8 @@ public interface ItemSourceHandler {
 	 * @return
 	 * @author liyixing 2015年11月3日 下午4:41:37
 	 */
-	public Date syncLastTradingTime(ItemSourceModel itemSourceModel,
-			String content);
+	public void syncLastNoticeDay(List<ItemSourceModel> itemSourceModels,
+			Browser browser,ProcessHandler processHandler);
 
 	/**
 	 * 
@@ -83,7 +85,7 @@ public interface ItemSourceHandler {
 	 * @version 1.0
 	 * @since 2015年11月3日 下午5:12:44
 	 */
-	public static interface Result {
+	public static interface ProcessHandler {
 		/**
 		 * 
 		 * 描述:成功

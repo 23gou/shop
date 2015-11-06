@@ -104,21 +104,22 @@ public interface ItemSourceEntityMapper {
      */
     int updateByPrimaryKey(ItemSourceEntity record);
     
-	/**
-	 * 
-	 * 描述:查询黑名单
-	 * 
-	 * @return
-	 * @author liyixing 2015年9月5日 上午10:32:01
-	 */
-	List<ItemSourceModel> selectBlacklist();
-	
-	/**
-	 * 
-	 * 描述:查询货源黑名单
-	 * 
-	 * @return
-	 * @author liyixing 2015年9月5日 上午10:32:01
-	 */
-	List<ItemSourceModel> selectSourceBlacklist();
+    
+   	/**
+   	 * 
+   	 * 描述:查询黑名单
+   	 * 
+   	 * @return
+   	 * @author liyixing 2015年9月5日 上午10:32:01
+   	 */
+   	List<ItemSourceModel> selectBlacklist();
+   	
+   	/**
+   	 * 
+   	 * 描述:查询货源黑名单
+   	 * 
+   	 * @return
+   	 * @author liyixing 2015年9月5日 上午10:32:01
+   	 */
+   	List<ItemSourceModel> selectSourceBlacklist();
 }
