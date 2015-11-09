@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import cn.gou23.cgodo.util.UtilHtml;
+import cn.gou23.cgodo.util.UtilLog;
 
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.ItemUpdateDelistingRequest;
@@ -70,8 +71,8 @@ public class ItemApi {
 
 		if (response.getErrorCode() != null) {
 			if ("该商品已被删除".equals(response.getSubMsg())) {
-				//下架
-				
+				// 下架
+
 			} else {
 				throw new RuntimeException(response.getMsg());
 			}
@@ -109,6 +110,7 @@ public class ItemApi {
 			return Long.valueOf(PropertyUtils.getProperty(apiStackVal,
 					"data.itemInfoModel.totalSoldQuantity").toString());
 		} catch (Exception e) {
+			UtilLog.error("处理itemid{}时失败，", e, id);
 			throw new RuntimeException(e);
 		}
 	}
