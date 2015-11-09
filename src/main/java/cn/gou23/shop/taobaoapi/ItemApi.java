@@ -69,7 +69,12 @@ public class ItemApi {
 		// 确保在对方设置过
 
 		if (response.getErrorCode() != null) {
-			throw new RuntimeException(response.getMsg());
+			if ("该商品已被删除".equals(response.getSubMsg())) {
+				//下架
+				
+			} else {
+				throw new RuntimeException(response.getMsg());
+			}
 		}
 	}
 
@@ -102,8 +107,7 @@ public class ItemApi {
 							.toString(), Map.class);
 
 			return Long.valueOf(PropertyUtils.getProperty(apiStackVal,
-					"data.itemInfoModel.totalSoldQuantity")
-					.toString());
+					"data.itemInfoModel.totalSoldQuantity").toString());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
