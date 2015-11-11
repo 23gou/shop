@@ -354,14 +354,15 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 				browser.addProgressListener(progressListener);
 				UtilBrowser
 						.toUrl(browser,
-								"https://ext-mdskip.taobao.com/extension/dealRecords.htm?_ksTS=1446801034284_697&callback=jsonp698&bid_page=1&page_size=15&is_start=false&item_type=b&ends=1447063242000&starts=1446458442000&item_id="
+								"https://ext-mdskip.taobao.com/extension/dealRecords.htm?callback=jsonp698&bid_page=1&page_size=15&is_start=false&item_type=b&ends=1447063242000&starts=1446458442000&item_id="
 										+ itemSourceModel.getSourceId()
-										+ "&user_tag=34672672&old_quantity=1992&seller_num_id=2380530097&isFromDetail=yes&totalSQ=465&sbn=6f080c9f68f5d3e88487ba5630ae79e3&sold_total_num=23&&isg=41524F0CD11E174FE3936D056E02BD4F&isg2=Aq-vcWfLRkAwSXcasWztcnvKv825wQN2");
+										+ "&user_tag=34672672&old_quantity=1992&seller_num_id=2380530097");
 			}
 
 			@Override
 			public void changed(ProgressEvent event) {
 			}
 		});
+		browser.setUrl("https://www.tmall.com");
 	}
 }
