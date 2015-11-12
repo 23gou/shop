@@ -96,7 +96,7 @@ public class ItemSourceServiceImpl implements ItemSourceService {
 //		criteria.andSaleStatusNotEqualTo(SaleStatus.下架);
 
 		return itemSourceEntityMapper
-				.selectByExample(itemSourceEntityCondition);
+				.selectByExampleWithRowbounds(itemSourceEntityCondition,PageContext.get());
 	}
 
 	@Override

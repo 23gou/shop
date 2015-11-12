@@ -3,6 +3,7 @@ package cn.gou23.shop.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import cn.gou23.cgodo.util.UtilDateTime;
 import cn.gou23.cgodo.util.UtilLog;
 import cn.gou23.shop.entity.ItemSourceEntity;
 
@@ -26,6 +27,11 @@ public class ItemSourceModel extends ItemSourceEntity {
 	 */
 	private static final BigDecimal MIN_PURCHASE_DISCOUNT_PRICE = BigDecimal
 			.valueOf(50);
+
+	/**
+	 * 交易记录，最高间隔
+	 */
+	private static final int MAX_LAST_NNOTICE_DAY = 7;
 	/**
 	 * 描述：
 	 */
@@ -71,6 +77,14 @@ public class ItemSourceModel extends ItemSourceEntity {
 					getSourceDetailUrl());
 			return true;
 		}
+
+		if (UtilDateTime.getDifferenceDay(new Date(), getLastNoticeDay()) > MAX_LAST_NNOTICE_DAY) {
+			UtilLog.debug("最后交易时间{}，超过{}，没有交易，非货源商品，自动下架，商品ID{}，URL{}",
+					getLastNoticeDay(), MAX_LAST_NNOTICE_DAY, getItemId(),
+					getSourceDetailUrl());
+			return true;
+		}
+		
 		return false;
 	}
 
@@ -103,24 +117,27 @@ public class ItemSourceModel extends ItemSourceEntity {
 	 * @mbggenerated do_not_delete_during_merge
 	 */
 	public Long getMyTotalSoldQuantity() {
-		return super.getMyTotalSoldQuantity() == null ? 0l : super.getMyTotalSoldQuantity();
+		return super.getMyTotalSoldQuantity() == null ? 0l : super
+				.getMyTotalSoldQuantity();
 	}
-	
+
 	/**
-     * 货源销量
-     *
-     * @mbggenerated do_not_delete_during_merge
-     */
-    public Long getSourceTotalSoldQuantity() {
-        return super.getSourceTotalSoldQuantity() == null ? 0l : super.getSourceTotalSoldQuantity();
-    }
-    
-    /**
-     * 最后交易日
-     *
-     * @mbggenerated do_not_delete_during_merge
-     */
-    public Date getLastNoticeDay() {
-        return super.getLastNoticeDay() == null ? new Date() : super.getLastNoticeDay();
-    }
+	 * 货源销量
+	 *
+	 * @mbggenerated do_not_delete_during_merge
+	 */
+	public Long getSourceTotalSoldQuantity() {
+		return super.getSourceTotalSoldQuantity() == null ? 0l : super
+				.getSourceTotalSoldQuantity();
+	}
+
+	/**
+	 * 最后交易日
+	 *
+	 * @mbggenerated do_not_delete_during_merge
+	 */
+	public Date getLastNoticeDay() {
+		return super.getLastNoticeDay() == null ? UtilDateTime.addDay(
+				new Date(), -100) : super.getLastNoticeDay();
+	}
 }

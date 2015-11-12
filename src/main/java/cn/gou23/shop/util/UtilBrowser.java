@@ -102,9 +102,10 @@ public class UtilBrowser {
 
 		while (matcher.find() && matcher.groupCount() > 0) {
 			String txt = matcher.group(1);
-			result = result + txt;
-		}
 
+			return txt;
+		}
+		
 		return result;
 	}
 
@@ -130,8 +131,19 @@ public class UtilBrowser {
 
 		String script = "location.href='" + href + "'";
 
-		browser.evaluate(script);
+		browser.execute(script);
 		return id;
 
+	}
+
+	/**
+	 * 
+	 * 描述:添加链接跳转的元素，并跳转
+	 * 
+	 * @return
+	 * @author liyixing 2015年9月11日 下午3:56:28
+	 */
+	public static final void toUrl(Browser browser, String href, String from) {
+		browser.setUrl(href, null, new String[] { "referer:" + from });
 	}
 }

@@ -2,6 +2,7 @@ package cn.gou23.shop.handler.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,11 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import cn.gou23.cgodo.util.UtilDateTime;
+import cn.gou23.cgodo.util.UtilHtml;
 import cn.gou23.cgodo.util.UtilLog;
 import cn.gou23.cgodo.util.UtilUrl;
 import cn.gou23.shop.constant.SourceType;
 import cn.gou23.shop.handler.ItemSourceHandler;
-import cn.gou23.shop.handler.ItemSourceHandler.ProcessHandler;
 import cn.gou23.shop.model.ItemSourceModel;
 import cn.gou23.shop.service.ItemSourceService;
 import cn.gou23.shop.taobaoapi.ItemApi;
@@ -49,6 +51,7 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 	private ItemApi itemApi;
 	@Autowired
 	private ItemSourceService ItemSourceService;
+	private ItemSourceModel currentItemSourceModel;
 
 	@Override
 	public String parseSourceId(String url) {
@@ -311,29 +314,60 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 
 	@Override
 	public void syncLastNoticeDay(List<ItemSourceModel> itemSourceModels,
-			Browser browser, ProcessHandler processHandler) {
+			Browser browser, final ProcessHandler processHandler) {
 		UtilLog.debug("需要更新最后交易日的商品数是：{}", itemSourceModels.size());
 
 		if (CollectionUtils.isEmpty(itemSourceModels)) {
 			return;
 		}
 
-		Iterator<ItemSourceModel> itemSourceModelsIterator = itemSourceModels
+		final Iterator<ItemSourceModel> itemSourceModelsIterator = itemSourceModels
 				.iterator();
-		ProgressListener progressListener = new MyProgressListener() {
+
+		final ProgressListener progressListener = new MyProgressListener() {
 			@Override
 			public void changed(ProgressEvent event) {
 			}
 
 			@Override
 			public void realCompleted(ProgressEvent event, Browser browser) {
+				browser.removeProgressListener(this);
+				String text = browser.getText();
+				UtilLog.debug("URL{} 商品{} 交易记录是：{}", browser.getUrl(),
+						currentItemSourceModel.getSourceId(), text);
+				String date = UtilBrowser
+						.parseTextWithPatternHtml(browser.getText(),
+								"&lt;p class=\\\\\"date\\\\\"&gt;(\\d{4}-\\d{2}-\\d{2}){1}&lt;/p&gt;");
 
+				if (StringUtils.isNotBlank(date)) {
+					Date d;
+					try {
+						d = UtilDateTime.parse(date, UtilDateTime.YYYY_MM_DD);
+						currentItemSourceModel.setLastNoticeDay(d);
+						ItemSourceService.saveSource(currentItemSourceModel);
+						//下一个
+						
+						if(itemSourceModelsIterator.hasNext()) {
+							currentItemSourceModel = itemSourceModelsIterator.next();
+							toTmallDealRecords(currentItemSourceModel, browser, this);
+						} else {
+							processHandler.doSuccess();
+						}
+					} catch (ParseException e) {
+						UtilLog.error("无效的时间{}", e, date);
+						processHandler.doError(e);
+						throw new RuntimeException(e);
+					}
+				}
 			}
 
 			public boolean isCompleted(ProgressEvent event, Browser browser) {
-				return true;
+				return browser.getText().indexOf("jsonp698") > 0;
 			}
 		};
+
+		currentItemSourceModel = itemSourceModelsIterator.next();
+		toTmallDealRecords(currentItemSourceModel, browser, progressListener);
 		return;
 	}
 
@@ -346,23 +380,47 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 	 */
 	private void toTmallDealRecords(final ItemSourceModel itemSourceModel,
 			final Browser browser, final ProgressListener progressListener) {
-		browser.addProgressListener(new ProgressListener() {
+		browser.addProgressListener(new MyProgressListener() {
 			@Override
-			public void completed(ProgressEvent event) {
+			public void realCompleted(ProgressEvent event, Browser browser) {
+				Date now = new Date();
+				String sellerId = UtilBrowser.parseTextWithPatternHtml(
+						browser.getText(), ",sellerId:\"(\\d{1,})\"");
 				// 跳转
 				browser.removeProgressListener(this);
 				browser.addProgressListener(progressListener);
 				UtilBrowser
 						.toUrl(browser,
-								"https://ext-mdskip.taobao.com/extension/dealRecords.htm?callback=jsonp698&bid_page=1&page_size=15&is_start=false&item_type=b&ends=1447063242000&starts=1446458442000&item_id="
+								"https://ext-mdskip.taobao.com/extension/dealRecords.htm?callback=jsonp698&bid_page=1&page_size=15&is_start=false&item_type=b&ends="
+										+ now.getTime()
+										+ "&starts="
+										+ UtilDateTime.addDay(now, 30)
+												.getTime()
+										+ "&item_id="
 										+ itemSourceModel.getSourceId()
-										+ "&user_tag=34672672&old_quantity=1992&seller_num_id=2380530097");
+										+ "&seller_num_id=" + sellerId,
+								"https://detail.tmall.com/item.htm?id="
+										+ itemSourceModel.getSourceId());
 			}
 
 			@Override
 			public void changed(ProgressEvent event) {
 			}
+
+			/**
+			 * 
+			 * 描述:是否已经完成
+			 * 
+			 * @param event
+			 * @param browser
+			 * @return
+			 * @author liyixing 2015年11月3日 下午5:01:44
+			 */
+			public boolean isCompleted(ProgressEvent event, Browser browser) {
+				return browser.getText().indexOf(",sellerId:\"") > 0;
+			}
 		});
-		browser.setUrl("https://www.tmall.com");
+		browser.setUrl("https://detail.tmall.com/item.htm?id="
+				+ itemSourceModel.getSourceId());
 	}
 }

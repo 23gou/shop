@@ -99,6 +99,7 @@ public class ShopMain {
 	private Page<ItemSourceModel> page = new Page<ItemSourceModel>();
 	private Text text_2;
 	private Text text_3;
+	private Label lblNewLabel_1;
 
 	/**
 	 * Launch the application.
@@ -147,11 +148,11 @@ public class ShopMain {
 	 */
 	protected void createContents() {
 		shell = new Shell();
-		shell.setSize(1020, 710);
+		shell.setSize(1360, 768);
 		shell.setText("\u7F51\u5E97\u8D27\u6E90\u7BA1\u7406\u5E73\u53F0");
 
 		tabFolder = new TabFolder(shell, SWT.NONE);
-		tabFolder.setBounds(10, 60, 984, 602);
+		tabFolder.setBounds(10, 60, 1324, 660);
 
 		tabItem = new TabItem(tabFolder, SWT.NONE);
 		tabItem.setText("\u6D4F\u89C8\u5668");
@@ -213,7 +214,7 @@ public class ShopMain {
 				addTableMenu();
 			}
 		});
-		table.setBounds(10, 149, 956, 392);
+		table.setBounds(10, 111, 1296, 476);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
@@ -233,12 +234,13 @@ public class ShopMain {
 				ItemSourceModel itemSourceModel = new ItemSourceModel();
 				itemSourceModel.setTitle(text_1.getText());
 				itemSourceModel.setItemId(text_1.getText().trim());
+				PageContext.set(new Page<ItemSourceModel>());
 				List<ItemSourceModel> itemSourceModels = itemSourceService
 						.find(itemSourceModel);
 				reviewTable(itemSourceModels);
 			}
 		});
-		button_2.setBounds(10, 116, 80, 27);
+		button_2.setBounds(10, 78, 80, 27);
 		button_2.setText("\u67E5\u8BE2");
 
 		Button button_3 = new Button(group, SWT.NONE);
@@ -309,8 +311,8 @@ public class ShopMain {
 				reviewTable(itemSourceModels);
 			}
 		});
-		button_4.setBounds(91, 116, 80, 27);
-		button_4.setText("\u9ED1\u540D\u5355\u67E5\u8BE2");
+		button_4.setBounds(91, 78, 80, 27);
+		button_4.setText("黑名单查询");
 
 		Button button_5 = new Button(group, SWT.NONE);
 		button_5.addSelectionListener(new SelectionAdapter() {
@@ -321,8 +323,8 @@ public class ShopMain {
 				reviewTable(itemSourceModels);
 			}
 		});
-		button_5.setText("\u8D27\u6E90\u9ED1\u540D\u5355");
-		button_5.setBounds(170, 116, 80, 27);
+		button_5.setText("货源黑名单");
+		button_5.setBounds(170, 78, 80, 27);
 
 		text_3 = new Text(group, SWT.WRAP);
 		text_3.setBounds(765, 10, 200, 130);
@@ -373,6 +375,41 @@ public class ShopMain {
 		});
 		button_7.setBounds(658, 20, 80, 27);
 		button_7.setText("\u6DD8\u5B9D\u6388\u6743");
+
+		Button button_8 = new Button(group, SWT.NONE);
+		button_8.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				PageContext.get().setPageNo(PageContext.get().getPageNo() - 1);
+				ItemSourceModel itemSourceModel = new ItemSourceModel();
+				// 第一页数据
+				List<ItemSourceModel> itemSourceModels = itemSourceService
+						.find(itemSourceModel);
+				reviewTable(itemSourceModels);
+			}
+		});
+		button_8.setBounds(10, 593, 80, 27);
+		button_8.setText("\u4E0A\u4E00\u9875");
+
+		Button btnNewButton = new Button(group, SWT.NONE);
+		btnNewButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				PageContext.get().setPageNo(PageContext.get().getPageNo() + 1);
+				ItemSourceModel itemSourceModel = new ItemSourceModel();
+				// 第一页数据
+				List<ItemSourceModel> itemSourceModels = itemSourceService
+						.find(itemSourceModel);
+				reviewTable(itemSourceModels);
+			}
+		});
+		btnNewButton.setBounds(91, 593, 80, 27);
+		btnNewButton.setText("\u4E0B\u4E00\u9875");
+
+		lblNewLabel_1 = new Label(group, SWT.NONE);
+		lblNewLabel_1.setBounds(177, 603, 128, 17);
+		lblNewLabel_1
+				.setText("\u5171\u9875/\u5F53\u524D\u9875/\u5171\u6761\u6570\u636E");
 
 		text_3.addModifyListener(new ModifyListener() {
 
@@ -461,8 +498,11 @@ public class ShopMain {
 				ProgressAdapter addSourceListener = new ProgressAdapter() {
 					public void completed(ProgressEvent event) {
 						try {
-							itemSourceHandler.parseInfo(newItemSourceModel,
-									browser.getText());
+							if (!itemSourceHandler.parseInfo(
+									newItemSourceModel, browser.getText())) {
+								errorMessage("无效的货源，没有加入淘宝客？");
+								return;
+							}
 						} catch (Exception e) {
 							errorMessage("淘宝解析失败，是否已经登录淘宝客？");
 							tabFolder.setSelection(tabItem);
@@ -493,6 +533,12 @@ public class ShopMain {
 			}
 		});
 
+		ItemSourceModel itemSourceModel = new ItemSourceModel();
+		// 第一页数据
+		PageContext.set(new Page<ItemSourceModel>());
+		List<ItemSourceModel> itemSourceModels = itemSourceService
+				.find(itemSourceModel);
+		reviewTable(itemSourceModels);
 	}
 
 	/**
@@ -504,33 +550,33 @@ public class ShopMain {
 	 */
 	private void initTable(Group group) {
 		TableColumn tblclmnNewColumn = new TableColumn(table, SWT.NONE);
-		tblclmnNewColumn.setWidth(80);
+		tblclmnNewColumn.setWidth(60);
 		tblclmnNewColumn.setText("\u56FE\u7247");
 
 		TableColumn tblclmnNewColumn_1 = new TableColumn(table, SWT.NONE);
-		tblclmnNewColumn_1.setWidth(400);
+		tblclmnNewColumn_1.setWidth(380);
 		tblclmnNewColumn_1.setText("\u6807\u9898");
 
 		TableColumn tableColumn = new TableColumn(table, SWT.NONE);
-		tableColumn.setWidth(100);
+		tableColumn.setWidth(60);
 		tableColumn.setText("\u9500\u552E\u4EF7");
 
 		TableColumn tableColumn_1 = new TableColumn(table, SWT.NONE);
-		tableColumn_1.setWidth(100);
+		tableColumn_1.setWidth(80);
 		tableColumn_1.setText("\u8FDB\u8D27\u4EF7");
 
 		TableColumn tableColumn_2 = new TableColumn(table, SWT.NONE);
-		tableColumn_2.setWidth(100);
+		tableColumn_2.setWidth(80);
 		tableColumn_2.setText("\u8FDB\u8D27\u6298\u6263\u989D");
 
 		TableColumn tableColumn_3 = new TableColumn(table, SWT.NONE);
-		tableColumn_3.setWidth(100);
+		tableColumn_3.setWidth(80);
 		tableColumn_3.setText("\u5229\u6DA6");
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
 		TableColumn tblclmnDefaultPrice = new TableColumn(table, SWT.NONE);
-		tblclmnDefaultPrice.setWidth(100);
+		tblclmnDefaultPrice.setWidth(80);
 		tblclmnDefaultPrice.setText("默认价");
 
 		TableColumn tblclmnStatus = new TableColumn(table, SWT.NONE);
@@ -539,22 +585,26 @@ public class ShopMain {
 
 		TableColumn tblclmnSourceTotalSoldQuantity = new TableColumn(table,
 				SWT.NONE);
-		tblclmnSourceTotalSoldQuantity.setWidth(100);
+		tblclmnSourceTotalSoldQuantity.setWidth(80);
 		tblclmnSourceTotalSoldQuantity.setText("货源销量");
 
 		TableColumn tblclmnMyTotalSoldQuantity = new TableColumn(table,
 				SWT.NONE);
-		tblclmnMyTotalSoldQuantity.setWidth(100);
+		tblclmnMyTotalSoldQuantity.setWidth(80);
 		tblclmnMyTotalSoldQuantity.setText("本地销量");
 
+		TableColumn tblclmnLastNoticeDay = new TableColumn(table, SWT.NONE);
+		tblclmnLastNoticeDay.setWidth(80);
+		tblclmnLastNoticeDay.setText("最后交易日");
+
 		TableColumn tblclmnUrl = new TableColumn(table, SWT.NONE);
-		tblclmnUrl.setWidth(100);
+		tblclmnUrl.setWidth(10);
 		tblclmnUrl.setText("URL");
 
 		// ID列只能放在最后一列
 		TableColumn tblclmnId = new TableColumn(table, SWT.NONE);
 		tblclmnId.setText("ID");
-		tblclmnId.setWidth(50);
+		tblclmnId.setWidth(10);
 
 		// Display display = group.getDisplay();
 		// final Color foreground = display.getSystemColor(SWT.COLOR_RED);
@@ -677,7 +727,7 @@ public class ShopMain {
 
 		try {
 			Image image = new Image(null, UtilImage.resizeImage(
-					itemSourceModel.getImg(), 80, 80));
+					itemSourceModel.getImg(), 60, 60));
 			item.setImage(0, image);
 			item.setText(1, itemSourceModel.getTitle());
 			item.setText(2, itemSourceModel.getPrice().toString());
@@ -691,7 +741,9 @@ public class ShopMain {
 			item.setText(8, itemSourceModel.getSourceTotalSoldQuantity()
 					.toString());
 			item.setText(9, itemSourceModel.getMyTotalSoldQuantity().toString());
-
+			item.setText(10,
+					UtilDateTime.format(itemSourceModel.getLastNoticeDay(),
+							UtilDateTime.YYYY_MM_DD));
 			item.setText(table.getColumnCount() - 2, itemSourceModel
 					.getSourceDetailUrl().toString());
 			// ID列只能放在最后一列
@@ -713,6 +765,9 @@ public class ShopMain {
 		for (ItemSourceModel itemSourceModel : itemSourceModels) {
 			showItemSource(itemSourceModel);
 		}
+		lblNewLabel_1.setText("共" + PageContext.get().getTotalPage() + "页/当前第"
+				+ PageContext.get().getPageNo() + "页/共"
+				+ +PageContext.get().getTotalCount() + "条数据");
 	}
 
 	/**
@@ -1061,6 +1116,7 @@ public class ShopMain {
 
 								@Override
 								public void doError(Exception exception) {
+									errorMessage(exception.getMessage());
 								}
 							});
 
@@ -1076,6 +1132,7 @@ public class ShopMain {
 
 								@Override
 								public void doError(Exception exception) {
+									errorMessage(exception.getMessage());
 								}
 							});
 				}
@@ -1265,5 +1322,5 @@ public class ShopMain {
 		public void setTextNotEmpty(String text) {
 			this.text = text;
 		}
-	};
+	}
 }
