@@ -90,6 +90,16 @@ public interface ItemSourceService {
 	 * @author liyixing 2015年8月26日 下午1:17:57
 	 */
 	public List<ItemSourceModel> getOn(ItemSourceModel itemSourceModel);
+	
+	/**
+	 * 
+	 * 描述:获取所有状态创建的
+	 * 
+	 * @param itemSourceModel
+	 * @return
+	 * @author liyixing 2015年8月26日 下午1:17:57
+	 */
+	public List<ItemSourceModel> getCreate(ItemSourceModel itemSourceModel);
 
 	/**
 	 * 

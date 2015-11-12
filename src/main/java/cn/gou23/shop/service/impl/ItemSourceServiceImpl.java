@@ -130,6 +130,20 @@ public class ItemSourceServiceImpl implements ItemSourceService {
 		return itemSourceEntityMapper
 				.selectByExample(itemSourceEntityCondition);
 	}
+	
+	@Override
+	public List<ItemSourceModel> getCreate(ItemSourceModel itemSourceModel) {
+		ItemSourceEntityCondition itemSourceEntityCondition = new ItemSourceEntityCondition();
+		// 指定店铺，状态未下架，指定货源类型
+		itemSourceEntityCondition.createCriteria()
+				.andShopIdEqualTo(itemSourceModel.getShopId())
+				.andSaleStatusEqualTo(SaleStatus.创建)
+				.andTypeEqualTo(itemSourceModel.getType());
+
+		return itemSourceEntityMapper
+				.selectByExample(itemSourceEntityCondition);
+	}
+	
 
 	@Override
 	public void delete(String id) {

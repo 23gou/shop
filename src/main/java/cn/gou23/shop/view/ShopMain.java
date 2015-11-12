@@ -241,17 +241,17 @@ public class ShopMain {
 			}
 		});
 		button_2.setBounds(10, 78, 80, 27);
-		button_2.setText("\u67E5\u8BE2");
+		button_2.setText("查询");
 
 		Button button_3 = new Button(group, SWT.NONE);
 		button_3.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				List<ItemSourceModel> itemSourceModels;
 				ItemSourceModel itemSourceModel = new ItemSourceModel();
-
-				itemSourceModel.setSaleStatus(SaleStatus.创建);
-				List<ItemSourceModel> itemSourceModels = itemSourceService
-						.find(itemSourceModel);
+				itemSourceModel.setShopId(getShop().getId());
+				itemSourceModel.setType(SourceType.淘宝联盟);
+				itemSourceModels = itemSourceService.getCreate(itemSourceModel);
 
 				// 导出到文件
 				try {
@@ -297,7 +297,7 @@ public class ShopMain {
 			}
 		});
 		button_3.setBounds(490, 20, 80, 27);
-		button_3.setText("\u5BFC\u51FA");
+		button_3.setText("导出");
 
 		text_2 = new Text(group, SWT.BORDER);
 		text_2.setBounds(404, 49, 73, 23);
@@ -389,7 +389,7 @@ public class ShopMain {
 			}
 		});
 		button_8.setBounds(10, 593, 80, 27);
-		button_8.setText("\u4E0A\u4E00\u9875");
+		button_8.setText("上一页");
 
 		Button btnNewButton = new Button(group, SWT.NONE);
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
@@ -951,6 +951,8 @@ public class ShopMain {
 								if (!itemSourceHandler.parseInfo(
 										currentItemSourceModel,
 										browser.getText())) {
+									UtilLog.debug("由于商品{}在淘宝客中不存在，因此自动下架",
+											currentItemSourceModel.getItemId());
 									// 淘宝客无效，下架
 									itemApi.delisting(Long
 											.valueOf(currentItemSourceModel
@@ -961,45 +963,23 @@ public class ShopMain {
 									itemSourceService
 											.saveSource(currentItemSourceModel);
 								} else {
-									// 检查是否需要下架
-									if (currentItemSourceModel.needOff()) {
-										// 淘宝客无效，下架
-										try {
-											itemApi.delisting(
-													Long.valueOf(currentItemSourceModel
-															.getItemId()),
-													getShop().getSessionKey());
-										} catch (Exception e) {
-											UtilLog.warn("商品{}，{}自动下架失败，请手动下架",
-													e, currentItemSourceModel
-															.getItemId(),
-													currentItemSourceModel
-															.getTitle());
-										}
-										currentItemSourceModel
-												.setSaleStatus(SaleStatus.下架);
-										itemSourceService
-												.saveSource(currentItemSourceModel);
-									} else {
-										// 不需要下架，自动修改标题
-										itemSourceService
-												.saveSource(currentItemSourceModel);
-										if (StringUtils
-												.isNotBlank(currentItemSourceModel
-														.getItemId())) {
-											UtilLog.debug(
-													"宝贝：{}，已经关联店铺信息，需要自动同步标题",
-													currentItemSourceModel
-															.getTitle());
-											// 更新标题
-											itemApi.updateTitle(
-													Long.valueOf(currentItemSourceModel
-															.getItemId()),
-													currentItemSourceModel
-															.getTitle(),
-													getShop().getSessionKey());
-										}
-
+									// 不需要下架，自动修改标题
+									itemSourceService
+											.saveSource(currentItemSourceModel);
+									if (StringUtils
+											.isNotBlank(currentItemSourceModel
+													.getItemId())) {
+										UtilLog.debug(
+												"宝贝：{}，已经关联店铺信息，需要自动同步标题",
+												currentItemSourceModel
+														.getTitle());
+										// 更新标题
+										itemApi.updateTitle(Long
+												.valueOf(currentItemSourceModel
+														.getItemId()),
+												currentItemSourceModel
+														.getTitle(), getShop()
+														.getSessionKey());
 									}
 								}
 							} catch (Exception e) {
@@ -1061,9 +1041,14 @@ public class ShopMain {
 					errorMessage(itemSourceHandler.syncItemSourceSku(
 							itemSourceModels, getShop().getSessionKey()));
 				} else {
+					ItemSourceModel itemSourceModel = new ItemSourceModel();
+					itemSourceModel.setShopId(getShop().getId());
+					itemSourceModel.setType(SourceType.淘宝联盟);
+
+					itemSourceModels = itemSourceService.getOn(itemSourceModel);
+
 					errorMessage(itemSourceHandler.syncItemSourceSku(
-							itemSourceService.find(new ItemSourceModel()),
-							getShop().getSessionKey()));
+							itemSourceModels, getShop().getSessionKey()));
 				}
 			}
 		});
@@ -1085,8 +1070,12 @@ public class ShopMain {
 					itemSourceHandler.syncTotalSoldQuantity(itemSourceModels);
 					errorMessage("同步销量成功！");
 				} else {
-					itemSourceHandler.syncTotalSoldQuantity(itemSourceService
-							.find(new ItemSourceModel()));
+					ItemSourceModel itemSourceModel = new ItemSourceModel();
+					itemSourceModel.setShopId(getShop().getId());
+					itemSourceModel.setType(SourceType.淘宝联盟);
+
+					itemSourceModels = itemSourceService.getOn(itemSourceModel);
+					itemSourceHandler.syncTotalSoldQuantity(itemSourceModels);
 					errorMessage("同步销量成功！");
 				}
 			}
@@ -1121,8 +1110,13 @@ public class ShopMain {
 							});
 
 				} else {
-					itemSourceHandler.syncLastNoticeDay(
-							itemSourceService.find(new ItemSourceModel()),
+					ItemSourceModel itemSourceModel = new ItemSourceModel();
+					itemSourceModel.setShopId(getShop().getId());
+					itemSourceModel.setType(SourceType.淘宝联盟);
+
+					itemSourceModels = itemSourceService.getOn(itemSourceModel);
+
+					itemSourceHandler.syncLastNoticeDay(itemSourceModels,
 							browser, new ProcessHandler() {
 
 								@Override
@@ -1135,6 +1129,34 @@ public class ShopMain {
 									errorMessage(exception.getMessage());
 								}
 							});
+				}
+			}
+		});
+
+		// 自动下架
+		MenuItem autoDelisting = new MenuItem(menu, SWT.PUSH);
+		autoDelisting.setText("自动下架");
+		autoDelisting.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				ItemSourceModel itemSourceModel1 = new ItemSourceModel();
+				itemSourceModel1.setShopId(getShop().getId());
+				itemSourceModel1.setType(SourceType.淘宝联盟);
+				List<ItemSourceModel> itemSourceModels = itemSourceService
+						.getOn(itemSourceModel1);
+
+				for (ItemSourceModel itemSourceModel : itemSourceModels) {
+					// 淘宝客无效，下架
+					try {
+						itemApi.delisting(
+								Long.valueOf(itemSourceModel.getItemId()),
+								getShop().getSessionKey());
+					} catch (Exception e) {
+						UtilLog.warn("商品{}，{}自动下架失败，请手动下架", e,
+								itemSourceModel.getItemId(),
+								itemSourceModel.getTitle());
+					}
+					itemSourceModel.setSaleStatus(SaleStatus.下架);
+					itemSourceService.saveSource(itemSourceModel);
 				}
 			}
 		});
