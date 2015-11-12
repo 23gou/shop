@@ -94,7 +94,7 @@ public class ItemSourceServiceImpl implements ItemSourceService {
 		}
 
 //		criteria.andSaleStatusNotEqualTo(SaleStatus.下架);
-
+		itemSourceEntityCondition.setOrderByClause( " ID");
 		return itemSourceEntityMapper
 				.selectByExampleWithRowbounds(itemSourceEntityCondition,PageContext.get());
 	}

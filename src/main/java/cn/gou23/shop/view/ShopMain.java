@@ -407,7 +407,7 @@ public class ShopMain {
 		btnNewButton.setText("\u4E0B\u4E00\u9875");
 
 		lblNewLabel_1 = new Label(group, SWT.NONE);
-		lblNewLabel_1.setBounds(177, 603, 128, 17);
+		lblNewLabel_1.setBounds(177, 603, 180, 17);
 		lblNewLabel_1
 				.setText("\u5171\u9875/\u5F53\u524D\u9875/\u5171\u6761\u6570\u636E");
 
