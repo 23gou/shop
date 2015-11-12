@@ -1145,19 +1145,25 @@ public class ShopMain {
 						.getOn(itemSourceModel1);
 
 				for (ItemSourceModel itemSourceModel : itemSourceModels) {
-					// 淘宝客无效，下架
-					try {
-						itemApi.delisting(
-								Long.valueOf(itemSourceModel.getItemId()),
-								getShop().getSessionKey());
-					} catch (Exception e) {
-						UtilLog.warn("商品{}，{}自动下架失败，请手动下架", e,
-								itemSourceModel.getItemId(),
-								itemSourceModel.getTitle());
+					if (itemSourceModel.needOff()) {
+						// 淘宝客无效，下架
+						try {
+							itemApi.delisting(
+									Long.valueOf(itemSourceModel.getItemId()),
+									getShop().getSessionKey());
+						} catch (Exception e) {
+							UtilLog.warn("商品{}，{}自动下架失败，请手动下架", e,
+									itemSourceModel.getItemId(),
+									itemSourceModel.getTitle());
+							errorMessage("商品" + itemSourceModel.getTitle()
+									+ "自动下架失败，请手动下架");
+						}
+						itemSourceModel.setSaleStatus(SaleStatus.下架);
+						itemSourceService.saveSource(itemSourceModel);
 					}
-					itemSourceModel.setSaleStatus(SaleStatus.下架);
-					itemSourceService.saveSource(itemSourceModel);
 				}
+
+				errorMessage("自动下架检查完成!");
 			}
 		});
 	}

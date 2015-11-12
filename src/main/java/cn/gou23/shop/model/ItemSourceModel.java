@@ -26,7 +26,7 @@ public class ItemSourceModel extends ItemSourceEntity {
 	 * 最低进货折扣价
 	 */
 	private static final BigDecimal MIN_PURCHASE_DISCOUNT_PRICE = BigDecimal
-			.valueOf(50);
+			.valueOf(45);
 
 	/**
 	 * 交易记录，最高间隔
@@ -48,9 +48,10 @@ public class ItemSourceModel extends ItemSourceEntity {
 	 * @mbggenerated do_not_delete_during_merge
 	 */
 	public BigDecimal getProfit() {
-		// 进货价减去进货折扣，减去销售价
-		return getPrice().subtract(
+		BigDecimal b = getPrice().subtract(
 				getPurchasePrice().subtract(getPurchaseDiscountPrice()));
+		// 进货价减去进货折扣，减去销售价
+		return b;
 	}
 
 	/**
