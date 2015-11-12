@@ -551,46 +551,46 @@ public class ShopMain {
 	private void initTable(Group group) {
 		TableColumn tblclmnNewColumn = new TableColumn(table, SWT.NONE);
 		tblclmnNewColumn.setWidth(60);
-		tblclmnNewColumn.setText("\u56FE\u7247");
+		tblclmnNewColumn.setText("图片");
 
 		TableColumn tblclmnNewColumn_1 = new TableColumn(table, SWT.NONE);
-		tblclmnNewColumn_1.setWidth(380);
-		tblclmnNewColumn_1.setText("\u6807\u9898");
+		tblclmnNewColumn_1.setWidth(375);
+		tblclmnNewColumn_1.setText("标题");
 
 		TableColumn tableColumn = new TableColumn(table, SWT.NONE);
 		tableColumn.setWidth(60);
-		tableColumn.setText("\u9500\u552E\u4EF7");
+		tableColumn.setText("销售价");
 
 		TableColumn tableColumn_1 = new TableColumn(table, SWT.NONE);
-		tableColumn_1.setWidth(80);
-		tableColumn_1.setText("\u8FDB\u8D27\u4EF7");
+		tableColumn_1.setWidth(60);
+		tableColumn_1.setText("进货价");
 
 		TableColumn tableColumn_2 = new TableColumn(table, SWT.NONE);
 		tableColumn_2.setWidth(80);
-		tableColumn_2.setText("\u8FDB\u8D27\u6298\u6263\u989D");
+		tableColumn_2.setText("进货折扣额");
 
 		TableColumn tableColumn_3 = new TableColumn(table, SWT.NONE);
-		tableColumn_3.setWidth(80);
-		tableColumn_3.setText("\u5229\u6DA6");
+		tableColumn_3.setWidth(60);
+		tableColumn_3.setText("利润");
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
 		TableColumn tblclmnDefaultPrice = new TableColumn(table, SWT.NONE);
-		tblclmnDefaultPrice.setWidth(80);
+		tblclmnDefaultPrice.setWidth(60);
 		tblclmnDefaultPrice.setText("默认价");
 
 		TableColumn tblclmnStatus = new TableColumn(table, SWT.NONE);
-		tblclmnStatus.setWidth(80);
+		tblclmnStatus.setWidth(60);
 		tblclmnStatus.setText("状态");
 
 		TableColumn tblclmnSourceTotalSoldQuantity = new TableColumn(table,
 				SWT.NONE);
-		tblclmnSourceTotalSoldQuantity.setWidth(80);
+		tblclmnSourceTotalSoldQuantity.setWidth(60);
 		tblclmnSourceTotalSoldQuantity.setText("货源销量");
 
 		TableColumn tblclmnMyTotalSoldQuantity = new TableColumn(table,
 				SWT.NONE);
-		tblclmnMyTotalSoldQuantity.setWidth(80);
+		tblclmnMyTotalSoldQuantity.setWidth(60);
 		tblclmnMyTotalSoldQuantity.setText("本地销量");
 
 		TableColumn tblclmnLastNoticeDay = new TableColumn(table, SWT.NONE);
