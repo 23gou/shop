@@ -429,11 +429,12 @@ public class ShopMain {
 		/**
 		 * 错误消息提示框
 		 */
-		lblNewLabel = new Label(shell, SWT.BORDER);
+		lblNewLabel = new Label(shell, SWT.WRAP);
 		lblNewLabel.setBounds(10, 10, 625, 44);
 		errorMessage("\u9519\u8BEF\u6D88\u606F");
 		lblNewLabel.setForeground(lblNewLabel.getDisplay().getSystemColor(
 				SWT.COLOR_RED));
+		lblNewLabel.pack();
 
 		combo = new Combo(shell, SWT.NONE);
 		combo.setBounds(729, 7, 88, 25);
