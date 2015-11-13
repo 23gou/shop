@@ -430,7 +430,7 @@ public class ShopMain {
 		 * 错误消息提示框
 		 */
 		lblNewLabel = new Label(shell, SWT.BORDER);
-		lblNewLabel.setBounds(10, 10, 404, 44);
+		lblNewLabel.setBounds(10, 10, 625, 44);
 		errorMessage("\u9519\u8BEF\u6D88\u606F");
 		lblNewLabel.setForeground(lblNewLabel.getDisplay().getSystemColor(
 				SWT.COLOR_RED));
