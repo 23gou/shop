@@ -434,7 +434,6 @@ public class ShopMain {
 		errorMessage("\u9519\u8BEF\u6D88\u606F");
 		lblNewLabel.setForeground(lblNewLabel.getDisplay().getSystemColor(
 				SWT.COLOR_RED));
-		lblNewLabel.pack();
 
 		combo = new Combo(shell, SWT.NONE);
 		combo.setBounds(729, 7, 88, 25);
