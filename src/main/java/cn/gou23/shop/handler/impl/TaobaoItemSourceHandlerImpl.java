@@ -268,9 +268,9 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 
 				// 修改标题
 				// 获取对方的SKU属性描述
-				if (skuOfSource.size() > 0) {
-					skuApi.updateSkuAlias(skuOfSource.get(0), sessionKey);
-				}
+//				if (skuOfSource.size() > 0) {
+//					skuApi.updateSkuAlias(skuOfSource.get(0), sessionKey);
+//				}
 
 				for (Sku sku : skuOfMy) {
 					if (sourceSkuByProperties.get(sku.getProperties()) == null) {
