@@ -283,6 +283,7 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 			} catch (Exception e) {
 				UtilLog.error("同步SKU失败", e);
 				failure++;
+				return "失败："+itemSourceModel.getItemId();
 			}
 		}
 
