@@ -34,7 +34,7 @@ public abstract class MyProgressListener implements ProgressListener {
 		final ProgressListener myProgressListener = this;
 
 		if (!isCompleted(event, browser)) {
-			Display.getDefault().timerExec((int) 100, new Runnable() {
+			Display.getDefault().timerExec((int) 500, new Runnable() {
 				public void run() {
 					UtilLog.debug("当前浏览器URL{}，还未完全加载完毕，等待100秒后继续",
 							browser.getUrl());
