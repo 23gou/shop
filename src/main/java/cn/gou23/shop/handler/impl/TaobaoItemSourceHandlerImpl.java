@@ -14,12 +14,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
+import org.eclipse.swt.widgets.Display;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import cn.gou23.cgodo.util.UtilDateTime;
-import cn.gou23.cgodo.util.UtilHtml;
 import cn.gou23.cgodo.util.UtilLog;
 import cn.gou23.cgodo.util.UtilUrl;
 import cn.gou23.shop.constant.SourceType;
@@ -268,9 +268,9 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 
 				// 修改标题
 				// 获取对方的SKU属性描述
-//				if (skuOfSource.size() > 0) {
-//					skuApi.updateSkuAlias(skuOfSource.get(0), sessionKey);
-//				}
+				// if (skuOfSource.size() > 0) {
+				// skuApi.updateSkuAlias(skuOfSource.get(0), sessionKey);
+				// }
 
 				for (Sku sku : skuOfMy) {
 					if (sourceSkuByProperties.get(sku.getProperties()) == null) {
@@ -283,7 +283,8 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 			} catch (Exception e) {
 				UtilLog.error("同步SKU失败", e);
 				failure++;
-				return "失败："+itemSourceModel.getItemId()+","+e.getMessage();
+				return "失败：" + itemSourceModel.getItemId() + ","
+						+ e.getMessage();
 			}
 		}
 
@@ -331,7 +332,8 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 			}
 
 			@Override
-			public void realCompleted(ProgressEvent event, Browser browser) {
+			public void realCompleted(ProgressEvent event, final Browser browser) {
+				final ProgressListener my = this;
 				browser.removeProgressListener(this);
 				String text = browser.getText();
 				UtilLog.debug("URL{} 商品{} 交易记录是：{}", browser.getUrl(),
@@ -346,11 +348,13 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 						d = UtilDateTime.parse(date, UtilDateTime.YYYY_MM_DD);
 						currentItemSourceModel.setLastNoticeDay(d);
 						ItemSourceService.saveSource(currentItemSourceModel);
-						//下一个
-						
-						if(itemSourceModelsIterator.hasNext()) {
-							currentItemSourceModel = itemSourceModelsIterator.next();
-							toTmallDealRecords(currentItemSourceModel, browser, this);
+						// 下一个
+
+						if (itemSourceModelsIterator.hasNext()) {
+							currentItemSourceModel = itemSourceModelsIterator
+									.next();
+							toTmallDealRecords(currentItemSourceModel, browser,
+									this);
 						} else {
 							processHandler.doSuccess();
 						}
@@ -358,6 +362,18 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 						UtilLog.error("无效的时间{}", e, date);
 						processHandler.doError(e);
 						throw new RuntimeException(e);
+					}
+				} else {
+					if (text.indexOf("系统太累了，要不您过段时间再来看吧。") > 0) {
+						Display.getDefault().timerExec((int) 2000,
+								new Runnable() {
+									public void run() {
+										toTmallDealRecords(
+												currentItemSourceModel,
+												browser, my);
+									}
+								});
+
 					}
 				}
 			}

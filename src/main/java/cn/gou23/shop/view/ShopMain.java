@@ -841,7 +841,6 @@ public class ShopMain {
 								browser.setUrl("https://sell.taobao.com/auction/merchandise/auction_list.htm?page="
 										+ page.getPageNo());
 							} else {
-								PageContext.clear();
 								browser.removeProgressListener(this);
 								// 关联店铺销售信息
 								relationShop(SaleStatus.创建);
@@ -850,7 +849,6 @@ public class ShopMain {
 							errorMessage("淘宝出售中数据解析失败，是否已经登录淘宝客？\r\n"
 									+ e.getMessage());
 							tabFolder.setSelection(tabItem);
-							PageContext.clear();
 							browser.removeProgressListener(this);
 							return;
 						}
@@ -889,7 +887,6 @@ public class ShopMain {
 								browser.setUrl("https://sell.taobao.com/auction/merchandise/auction_list.htm?page="
 										+ page.getPageNo());
 							} else {
-								PageContext.clear();
 								browser.removeProgressListener(this);
 								// 关联店铺销售信息
 								relationShop();
@@ -898,7 +895,6 @@ public class ShopMain {
 							errorMessage("淘宝出售中数据解析失败，是否已经登录淘宝客？\r\n"
 									+ e.getMessage());
 							tabFolder.setSelection(tabItem);
-							PageContext.clear();
 							browser.removeProgressListener(this);
 							return;
 						}
@@ -973,13 +969,18 @@ public class ShopMain {
 												"宝贝：{}，已经关联店铺信息，需要自动同步标题",
 												currentItemSourceModel
 														.getTitle());
-										// 更新标题
-										itemApi.updateTitle(Long
-												.valueOf(currentItemSourceModel
-														.getItemId()),
-												currentItemSourceModel
-														.getTitle(), getShop()
-														.getSessionKey());
+										try {
+											// 更新标题
+											itemApi.updateTitle(
+													Long.valueOf(currentItemSourceModel
+															.getItemId()),
+													currentItemSourceModel
+															.getTitle(),
+													getShop().getSessionKey());
+										} catch (Exception e) {
+											errorMessage("淘宝解析失败，是否已经登录淘宝客？\r\n"
+													+ e.getMessage());
+										}
 									}
 								}
 							} catch (Exception e) {
