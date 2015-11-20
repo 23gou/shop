@@ -333,8 +333,6 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 
 			@Override
 			public void realCompleted(ProgressEvent event, final Browser browser) {
-				final ProgressListener my = this;
-				browser.removeProgressListener(this);
 				String text = browser.getText();
 				UtilLog.debug("URL{} 商品{} 交易记录是：{}", browser.getUrl(),
 						currentItemSourceModel.getSourceId(), text);
@@ -353,9 +351,9 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 						if (itemSourceModelsIterator.hasNext()) {
 							currentItemSourceModel = itemSourceModelsIterator
 									.next();
-							toTmallDealRecords(currentItemSourceModel, browser,
-									this);
+							toTmallDealRecords(currentItemSourceModel, browser);
 						} else {
+							browser.removeProgressListener(this);
 							processHandler.doSuccess();
 						}
 					} catch (ParseException e) {
@@ -369,8 +367,7 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 								new Runnable() {
 									public void run() {
 										toTmallDealRecords(
-												currentItemSourceModel,
-												browser, my);
+												currentItemSourceModel, browser);
 									}
 								});
 
@@ -383,8 +380,9 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 			}
 		};
 
+		browser.addProgressListener(progressListener);
 		currentItemSourceModel = itemSourceModelsIterator.next();
-		toTmallDealRecords(currentItemSourceModel, browser, progressListener);
+		toTmallDealRecords(currentItemSourceModel, browser);
 		return;
 	}
 
@@ -396,7 +394,7 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 	 * @author liyixing 2015年11月6日 下午5:16:32
 	 */
 	private void toTmallDealRecords(final ItemSourceModel itemSourceModel,
-			final Browser browser, final ProgressListener progressListener) {
+			final Browser browser) {
 		browser.addProgressListener(new MyProgressListener() {
 			@Override
 			public void realCompleted(ProgressEvent event, Browser browser) {
@@ -405,7 +403,6 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 						browser.getText(), ",sellerId:\"(\\d{1,})\"");
 				// 跳转
 				browser.removeProgressListener(this);
-				browser.addProgressListener(progressListener);
 				UtilBrowser
 						.toUrl(browser,
 								"https://ext-mdskip.taobao.com/extension/dealRecords.htm?callback=jsonp698&bid_page=1&page_size=15&is_start=false&item_type=b&ends="
