@@ -20,18 +20,18 @@ public class ItemSourceModel extends ItemSourceEntity {
 	/**
 	 * 最低折扣
 	 */
-	private static final BigDecimal MIN_PROFIT = BigDecimal.valueOf(30);
+	private static final BigDecimal MIN_PROFIT = BigDecimal.valueOf(20);
 
 	/**
 	 * 最低进货折扣价
 	 */
 	private static final BigDecimal MIN_PURCHASE_DISCOUNT_PRICE = BigDecimal
-			.valueOf(45);
+			.valueOf(40);
 
 	/**
 	 * 交易记录，最高间隔
 	 */
-	private static final int MAX_LAST_NNOTICE_DAY = 7;
+	private static final int MAX_LAST_NNOTICE_DAY = 30;
 	/**
 	 * 描述：
 	 */
