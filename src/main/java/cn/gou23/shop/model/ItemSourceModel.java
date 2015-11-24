@@ -20,13 +20,12 @@ public class ItemSourceModel extends ItemSourceEntity {
 	/**
 	 * 最低折扣
 	 */
-	private static final BigDecimal MIN_PROFIT = BigDecimal.valueOf(20);
+	private static final BigDecimal MIN_PROFIT = BigDecimal.valueOf(14);
 
 	/**
 	 * 最低进货折扣价
 	 */
-	private static final BigDecimal MIN_PURCHASE_DISCOUNT_PRICE = BigDecimal
-			.valueOf(40);
+	private static final BigDecimal MIN_PURCHASE_DISCOUNT_PRICE = BigDecimal.valueOf(40);
 
 	/**
 	 * 交易记录，最高间隔
@@ -48,10 +47,13 @@ public class ItemSourceModel extends ItemSourceEntity {
 	 * @mbggenerated do_not_delete_during_merge
 	 */
 	public BigDecimal getProfit() {
-		BigDecimal b = getPrice().subtract(
-				getPurchasePrice().subtract(getPurchaseDiscountPrice()));
-		// 进货价减去进货折扣，减去销售价
-		return b;
+		// 折扣
+		BigDecimal a = getPurchaseDiscountPrice().subtract(getPurchaseDiscountPrice().multiply(BigDecimal.valueOf(0.14)));
+		//入价
+		BigDecimal c = getPurchasePrice().subtract(a);
+		BigDecimal b = getPrice().subtract(c);
+		// 进货价减去进货折扣，减去销售价 - 税点（税点不固定，最高4%） - 服务费（10%） 约等于14%
+		return b.setScale(2, BigDecimal.ROUND_DOWN);
 	}
 
 	/**
@@ -65,27 +67,24 @@ public class ItemSourceModel extends ItemSourceEntity {
 	public boolean needOff() {
 		BigDecimal profit = getProfit();
 
-		// 利润最低25
+		// 利润最低
 		if (profit.compareTo(MIN_PROFIT) < 0) {
-			UtilLog.debug("利润过低，需要下架，利润{}，商品ID{}，URL{}", profit, getItemId(),
-					getSourceDetailUrl());
+			UtilLog.debug("利润过低，需要下架，利润{}，商品ID{}，URL{}", profit, getItemId(), getSourceDetailUrl());
 			return true;
 		}
 
 		if (getPurchaseDiscountPrice().compareTo(MIN_PURCHASE_DISCOUNT_PRICE) < 0) {
-			UtilLog.debug("进货折扣过低，需要下架，折扣（返利）{}，商品ID{}，URL{}",
-					getPurchaseDiscountPrice(), getItemId(),
+			UtilLog.debug("进货折扣过低，需要下架，折扣（返利）{}，商品ID{}，URL{}", getPurchaseDiscountPrice(), getItemId(),
 					getSourceDetailUrl());
 			return true;
 		}
 
 		if (UtilDateTime.getDifferenceDay(new Date(), getLastNoticeDay()) > MAX_LAST_NNOTICE_DAY) {
-			UtilLog.debug("最后交易时间{}，超过{}，没有交易，非货源商品，自动下架，商品ID{}，URL{}",
-					getLastNoticeDay(), MAX_LAST_NNOTICE_DAY, getItemId(),
-					getSourceDetailUrl());
+			UtilLog.debug("最后交易时间{}，超过{}，没有交易，非货源商品，自动下架，商品ID{}，URL{}", getLastNoticeDay(), MAX_LAST_NNOTICE_DAY,
+					getItemId(), getSourceDetailUrl());
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -99,14 +98,13 @@ public class ItemSourceModel extends ItemSourceEntity {
 	public BigDecimal countDefaultPrice() {
 		// 计算默认销售价
 		// 店铺销售价相对进货价的折扣价未进货折扣价的一半
-		BigDecimal myDiscountPrice = getPurchaseDiscountPrice().divide(
-				BigDecimal.valueOf(2)).setScale(2, BigDecimal.ROUND_DOWN);
+		BigDecimal myDiscountPrice = getPurchaseDiscountPrice().divide(BigDecimal.valueOf(2)).setScale(2,
+				BigDecimal.ROUND_DOWN);
 
 		// 不够最低利润
 		// 进货价-进货折扣+最低利润
 		if (myDiscountPrice.compareTo(MIN_PROFIT) < 0) {
-			return getPurchasePrice().subtract(getPurchaseDiscountPrice()).add(
-					MIN_PROFIT);
+			return getPurchasePrice().subtract(getPurchaseDiscountPrice()).add(MIN_PROFIT);
 		} else {
 			return getPurchasePrice().subtract(myDiscountPrice);
 		}
@@ -118,8 +116,7 @@ public class ItemSourceModel extends ItemSourceEntity {
 	 * @mbggenerated do_not_delete_during_merge
 	 */
 	public Long getMyTotalSoldQuantity() {
-		return super.getMyTotalSoldQuantity() == null ? 0l : super
-				.getMyTotalSoldQuantity();
+		return super.getMyTotalSoldQuantity() == null ? 0l : super.getMyTotalSoldQuantity();
 	}
 
 	/**
@@ -128,8 +125,7 @@ public class ItemSourceModel extends ItemSourceEntity {
 	 * @mbggenerated do_not_delete_during_merge
 	 */
 	public Long getSourceTotalSoldQuantity() {
-		return super.getSourceTotalSoldQuantity() == null ? 0l : super
-				.getSourceTotalSoldQuantity();
+		return super.getSourceTotalSoldQuantity() == null ? 0l : super.getSourceTotalSoldQuantity();
 	}
 
 	/**
@@ -138,7 +134,6 @@ public class ItemSourceModel extends ItemSourceEntity {
 	 * @mbggenerated do_not_delete_during_merge
 	 */
 	public Date getLastNoticeDay() {
-		return super.getLastNoticeDay() == null ? UtilDateTime.addDay(
-				new Date(), -100) : super.getLastNoticeDay();
+		return super.getLastNoticeDay() == null ? UtilDateTime.addDay(new Date(), -100) : super.getLastNoticeDay();
 	}
 }
