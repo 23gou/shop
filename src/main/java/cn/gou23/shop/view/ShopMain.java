@@ -171,6 +171,10 @@ public class ShopMain {
 				}
 			}
 
+			public boolean isUrl(ProgressEvent event, Browser browser) {
+				return (browser.getUrl().indexOf("login.taobao.com/member/login") >= 0);
+			}
+			
 			public boolean isCompleted(ProgressEvent event, Browser browser) {
 				if (browser.getUrl().indexOf("login.taobao.com/member/login") >= 0) {
 					return browser

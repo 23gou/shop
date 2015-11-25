@@ -71,7 +71,6 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 	@Override
 	public boolean parseInfo(ItemSourceModel itemSourceModel, String content) {
 		ObjectMapper objectMapper = new ObjectMapper();
-
 		// 去阿里妈妈读取商品详情
 		try {
 			Map<String, Object> result = objectMapper
@@ -347,15 +346,7 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 						currentItemSourceModel.setLastNoticeDay(d);
 						ItemSourceService.saveSource(currentItemSourceModel);
 						// 下一个
-
-						if (itemSourceModelsIterator.hasNext()) {
-							currentItemSourceModel = itemSourceModelsIterator
-									.next();
-							toTmallDealRecords(currentItemSourceModel, browser);
-						} else {
-							browser.removeProgressListener(this);
-							processHandler.doSuccess();
-						}
+						next(processHandler, itemSourceModelsIterator, browser);
 					} catch (ParseException e) {
 						UtilLog.error("无效的时间{}", e, date);
 						processHandler.doError(e);
@@ -363,11 +354,13 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 					}
 				} else {
 					if (text.indexOf("系统太累了，要不您过段时间再来看吧。") > 0) {
+						// 这种情况，可能是没有销量
 						Display.getDefault().timerExec((int) 5000,
 								new Runnable() {
 									public void run() {
-										toTmallDealRecords(
-												currentItemSourceModel, browser);
+										next(processHandler,
+												itemSourceModelsIterator,
+												browser);
 									}
 								});
 
@@ -375,12 +368,27 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 				}
 			}
 
+			private void next(final ProcessHandler processHandler,
+					final Iterator<ItemSourceModel> itemSourceModelsIterator,
+					final Browser browser) {
+				if (itemSourceModelsIterator.hasNext()) {
+					currentItemSourceModel = itemSourceModelsIterator.next();
+					toTmallDealRecords(currentItemSourceModel, browser);
+				} else {
+					browser.removeProgressListener(this);
+					processHandler.doSuccess();
+				}
+			}
+
 			public boolean isCompleted(ProgressEvent event, Browser browser) {
 				return browser.getText().indexOf("jsonp698") > 0;
 			}
-			
+
 			public boolean isUrl(ProgressEvent event, Browser browser) {
-				boolean result = browser.getUrl().startsWith("https://ext-mdskip.taobao.com/extension/dealRecords.htm");
+				boolean result = browser
+						.getUrl()
+						.startsWith(
+								"https://ext-mdskip.taobao.com/extension/dealRecords.htm");
 				return result;
 			}
 		};
@@ -408,18 +416,18 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 						browser.getText(), ",sellerId:\"(\\d{1,})\"");
 				// 跳转
 				browser.removeProgressListener(this);
-				UtilBrowser
-						.toUrl(browser,
-								"https://ext-mdskip.taobao.com/extension/dealRecords.htm?callback=jsonp698&bid_page=1&page_size=15&is_start=false&item_type=b&ends="
-										+ now.getTime()
-										+ "&starts="
-										+ UtilDateTime.addDay(now, 30)
-												.getTime()
-										+ "&item_id="
-										+ itemSourceModel.getSourceId()
-										+ "&seller_num_id=" + sellerId,
-								"https://detail.tmall.com/item.htm?id="
-										+ itemSourceModel.getSourceId());
+				String url = "https://ext-mdskip.taobao.com/extension/dealRecords.htm?callback=jsonp698&bid_page=1&page_size=15&is_start=false&item_type=b&ends="
+						+ now.getTime()
+						+ "&starts="
+						+ UtilDateTime.addDay(now, 30).getTime()
+						+ "&item_id="
+						+ itemSourceModel.getSourceId()
+						+ "&seller_num_id="
+						+ sellerId;
+				;
+				UtilBrowser.toUrl(browser, url,
+						"https://detail.tmall.com/item.htm?id="
+								+ itemSourceModel.getSourceId());
 			}
 
 			@Override
