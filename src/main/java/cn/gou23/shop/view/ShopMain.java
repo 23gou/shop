@@ -382,7 +382,9 @@ public class ShopMain {
 			public void widgetSelected(SelectionEvent e) {
 				PageContext.get().setPageNo(PageContext.get().getPageNo() - 1);
 				ItemSourceModel itemSourceModel = new ItemSourceModel();
-				// 第一页数据
+				itemSourceModel.setTitle(text_1.getText());
+				itemSourceModel.setItemId(text_1.getText().trim());
+				// 上一页数据
 				List<ItemSourceModel> itemSourceModels = itemSourceService
 						.find(itemSourceModel);
 				reviewTable(itemSourceModels);
@@ -398,6 +400,8 @@ public class ShopMain {
 				PageContext.get().setPageNo(PageContext.get().getPageNo() + 1);
 				ItemSourceModel itemSourceModel = new ItemSourceModel();
 				// 第一页数据
+				itemSourceModel.setTitle(text_1.getText());
+				itemSourceModel.setItemId(text_1.getText().trim());
 				List<ItemSourceModel> itemSourceModels = itemSourceService
 						.find(itemSourceModel);
 				reviewTable(itemSourceModels);
