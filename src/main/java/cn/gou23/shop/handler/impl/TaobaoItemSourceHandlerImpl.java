@@ -363,7 +363,7 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 					}
 				} else {
 					if (text.indexOf("系统太累了，要不您过段时间再来看吧。") > 0) {
-						Display.getDefault().timerExec((int) 2000,
+						Display.getDefault().timerExec((int) 5000,
 								new Runnable() {
 									public void run() {
 										toTmallDealRecords(
@@ -377,6 +377,11 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 
 			public boolean isCompleted(ProgressEvent event, Browser browser) {
 				return browser.getText().indexOf("jsonp698") > 0;
+			}
+			
+			public boolean isUrl(ProgressEvent event, Browser browser) {
+				boolean result = browser.getUrl().startsWith("https://ext-mdskip.taobao.com/extension/dealRecords.htm");
+				return result;
 			}
 		};
 

@@ -32,6 +32,11 @@ public abstract class MyProgressListener implements ProgressListener {
 	public void completed(final ProgressEvent event) {
 		final Browser browser = (Browser) event.getSource();
 		final ProgressListener myProgressListener = this;
+		
+		if(!isUrl(event,browser)) {
+			UtilLog.debug("当前浏览器URL{}，不是需要处理的url", browser.getUrl());
+			return;
+		}
 
 		if (!isCompleted(event, browser)) {
 			Display.getDefault().timerExec((int) 500, new Runnable() {
@@ -57,6 +62,19 @@ public abstract class MyProgressListener implements ProgressListener {
 	 * @author liyixing 2015年11月3日 下午5:01:44
 	 */
 	public boolean isCompleted(ProgressEvent event, Browser browser) {
+		return true;
+	}
+	
+	/**
+	 * 
+	 * 描述:是否可以处理的连接
+	 * 
+	 * @param event
+	 * @param browser
+	 * @return
+	 * @author liyixing 2015年11月3日 下午5:01:44
+	 */
+	public boolean isUrl(ProgressEvent event, Browser browser) {
 		return true;
 	}
 }
