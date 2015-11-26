@@ -20,7 +20,7 @@ public class ItemSourceModel extends ItemSourceEntity {
 	/**
 	 * 最低折扣
 	 */
-	private static final BigDecimal MIN_PROFIT = BigDecimal.valueOf(14);
+	private static final BigDecimal MIN_PROFIT = BigDecimal.valueOf(10);
 
 	/**
 	 * 最低进货折扣价
