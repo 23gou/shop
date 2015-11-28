@@ -332,6 +332,7 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 
 			@Override
 			public void realCompleted(ProgressEvent event, final Browser browser) {
+				final ProgressListener my = this;
 				String text = browser.getText();
 				UtilLog.debug("URL{} 商品{} 交易记录是：{}", browser.getUrl(),
 						currentItemSourceModel.getSourceId(), text);
@@ -346,7 +347,7 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 						currentItemSourceModel.setLastNoticeDay(d);
 						ItemSourceService.saveSource(currentItemSourceModel);
 						// 下一个
-						next(processHandler, itemSourceModelsIterator, browser);
+						next(processHandler, itemSourceModelsIterator, browser,my);
 					} catch (ParseException e) {
 						UtilLog.error("无效的时间{}", e, date);
 						processHandler.doError(e);
@@ -360,7 +361,7 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 									public void run() {
 										next(processHandler,
 												itemSourceModelsIterator,
-												browser);
+												browser,my);
 									}
 								});
 
@@ -370,14 +371,19 @@ public class TaobaoItemSourceHandlerImpl implements ItemSourceHandler {
 
 			private void next(final ProcessHandler processHandler,
 					final Iterator<ItemSourceModel> itemSourceModelsIterator,
-					final Browser browser) {
-				if (itemSourceModelsIterator.hasNext()) {
-					currentItemSourceModel = itemSourceModelsIterator.next();
-					toTmallDealRecords(currentItemSourceModel, browser);
-				} else {
-					browser.removeProgressListener(this);
-					processHandler.doSuccess();
-				}
+					final Browser browser,final ProgressListener my) {
+				Display.getDefault().timerExec((int) 2000, new Runnable() {
+					public void run() {
+						if (itemSourceModelsIterator.hasNext()) {
+							currentItemSourceModel = itemSourceModelsIterator
+									.next();
+							toTmallDealRecords(currentItemSourceModel, browser);
+						} else {
+							browser.removeProgressListener(my);
+							processHandler.doSuccess();
+						}
+					}
+				});
 			}
 
 			public boolean isCompleted(ProgressEvent event, Browser browser) {
