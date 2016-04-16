@@ -3,8 +3,9 @@ package cn.gou23.shop.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import cn.gou23.cgodo.util.UtilDateTime;
-import cn.gou23.cgodo.util.UtilLog;
+import com.cgodo.util.UtilDateTime;
+import com.cgodo.util.UtilLog;
+
 import cn.gou23.shop.entity.ItemSourceEntity;
 
 /**

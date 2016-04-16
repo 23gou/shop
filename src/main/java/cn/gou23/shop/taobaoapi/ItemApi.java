@@ -8,9 +8,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import cn.gou23.cgodo.util.UtilHtml;
-import cn.gou23.cgodo.util.UtilLog;
-
+import com.cgodo.util.UtilHtml;
+import com.cgodo.util.UtilLog;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.ItemUpdateDelistingRequest;
 import com.taobao.api.request.ItemUpdateRequest;

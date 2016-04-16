@@ -19,9 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import cn.gou23.cgodo.util.UtilDateTime;
-import cn.gou23.cgodo.util.UtilLog;
-import cn.gou23.cgodo.util.UtilUrl;
 import cn.gou23.shop.constant.SourceType;
 import cn.gou23.shop.handler.ItemSourceHandler;
 import cn.gou23.shop.model.ItemSourceModel;
@@ -32,6 +29,9 @@ import cn.gou23.shop.taobaoapi.SkuApi.Sku;
 import cn.gou23.shop.util.UtilBrowser;
 import cn.gou23.shop.view.MyProgressListener;
 
+import com.cgodo.util.UtilDateTime;
+import com.cgodo.util.UtilLog;
+import com.cgodo.util.UtilUrl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**

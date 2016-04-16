@@ -5,7 +5,7 @@ import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.widgets.Display;
 
-import cn.gou23.cgodo.util.UtilLog;
+import com.cgodo.util.UtilLog;
 
 /**
  * 
